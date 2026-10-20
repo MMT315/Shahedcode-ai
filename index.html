@@ -3996,6 +3996,188 @@ function ensureGameHTMLReady(code) {
   return source;
 }
 
+function buildPythonPreviewHTML(source) {
+  var pySource = JSON.stringify(String(source || ""))
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+
+  var html = String.raw`<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>اجرای Python | شاهد کد</title>
+<style>
+:root{color-scheme:dark;--bg:#080d1b;--panel:#10182b;--panel2:#0c1323;--line:#27344d;--muted:#9ba9c5;--text:#edf2ff;--purple:#a100ff;--purple2:#6d28d9;--mint:#8ff0d3;--danger:#ffb4c0}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100vh;padding:clamp(12px,2.8vw,24px);padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));background:radial-gradient(ellipse at 100% 0%,rgba(99,55,190,.17),transparent 38%),var(--bg);color:var(--text);font-family:Vazirmatn,Tahoma,Arial,sans-serif;line-height:1.65}
+button,textarea{font:inherit}
+button{touch-action:manipulation}
+.py-shell{width:100%;max-width:900px;margin:0 auto;display:grid;gap:14px}
+.py-hero{display:flex;align-items:center;gap:13px;padding:4px 1px 8px;min-width:0}
+.py-brand-icon{display:grid;place-items:center;flex:0 0 54px;height:54px;border-radius:17px;background:linear-gradient(140deg,#3776ab 0%,#477fc0 42%,#ffd343 100%);color:#101727;font:900 22px/1 ui-monospace,Consolas,monospace;box-shadow:0 8px 26px #3776ab35;letter-spacing:-2px}
+.py-hero-main{flex:1;min-width:0}
+.py-title-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.py-title{margin:0;font-size:clamp(18px,3.7vw,23px);font-weight:900;letter-spacing:-.3px}
+.py-subtitle{margin:3px 0 0;color:var(--muted);font-size:12px}
+.py-engine-pill{display:inline-flex;align-items:center;gap:6px;direction:ltr;border:1px solid #315954;background:#0c2928;color:var(--mint);border-radius:99px;padding:4px 9px;font:700 10px/1.4 ui-monospace,Consolas,monospace;white-space:nowrap}
+.py-engine-dot{width:6px;height:6px;border-radius:50%;background:#42d6a4;box-shadow:0 0 10px #42d6a477}
+.py-intro{margin:0;padding:11px 13px;border:1px solid #26334d;border-radius:13px;background:#0d1527;color:#b8c5df;font-size:12px;line-height:1.9}
+.py-section{min-width:0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(18,27,47,.98),rgba(10,16,29,.98));overflow:hidden;box-shadow:0 12px 34px #0000001a}
+.py-section-head{min-height:45px;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #222e45;background:#111a2d}
+.py-section-name{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800}
+.py-section-mark{width:7px;height:7px;border-radius:2px;background:var(--purple);box-shadow:0 0 12px #a100ff70;transform:rotate(45deg)}
+.py-file-label{direction:ltr;color:#a8b8d6;font:11px ui-monospace,Consolas,monospace}
+.py-editor-wrap{padding:0;background:#080d18}
+.py-editor{display:block;width:100%;min-height:clamp(190px,34vh,330px);max-height:52vh;resize:vertical;border:0;border-radius:0;outline:none;padding:17px 16px;background:transparent;color:#e8edff;font:13px/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;direction:ltr;text-align:left;tab-size:4;white-space:pre;overflow:auto;caret-color:#d8b4fe}
+.py-editor:focus-visible{box-shadow:inset 0 0 0 1px #7434b3}
+.py-editor::placeholder{color:#63708b}
+.py-editor-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-top:1px solid #202a40;background:#0c1322;color:#7e8daa;font-size:10px}
+.py-editor-tools span{direction:rtl}
+.py-link-btn{border:0;background:transparent;color:#c8b4ff;padding:4px 2px;min-height:30px;font-size:11px;font-weight:700;cursor:pointer}
+.py-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:stretch}
+.py-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:12px 16px;border:1px solid transparent;border-radius:13px;font-size:14px;font-weight:900;cursor:pointer;transition:transform .15s ease,filter .15s ease,opacity .15s ease}
+.py-btn:active{transform:scale(.985)}
+.py-btn:focus-visible{outline:2px solid #d8b4fe;outline-offset:2px}
+.py-btn:disabled{opacity:.65;cursor:wait}
+.py-run{color:#fff;background:linear-gradient(120deg,#a100ff,#7028df);box-shadow:0 7px 22px #8b24dd30}
+.py-clear{color:#d9e3f8;background:#1b263c;border-color:#2d3a54;white-space:nowrap}
+.py-play{font-size:14px}
+.py-status{display:flex;align-items:flex-start;gap:9px;margin:0;padding:10px 12px;border:1px solid #273650;border-radius:12px;background:#10192b;color:#cbd6eb;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.py-status-dot{flex:0 0 8px;height:8px;margin-top:7px;border-radius:50%;background:#50d6a4;box-shadow:0 0 0 4px #50d6a415}
+.py-status.error{border-color:#6f3449;background:#251321;color:var(--danger)}
+.py-status.error .py-status-dot{background:#fb7185;box-shadow:0 0 0 4px #fb71851a}
+.py-status.busy .py-status-dot{background:#c084fc;box-shadow:0 0 0 4px #a100ff24;animation:py-pulse 1s infinite}
+@keyframes py-pulse{50%{opacity:.35}}
+.py-output{min-height:118px;max-height:34vh;overflow:auto;margin:0;padding:13px 15px;background:#060a12;color:#a5f3d0;direction:ltr;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.85 ui-monospace,SFMono-Regular,Consolas,monospace;scrollbar-width:thin}
+.py-output.empty{color:#6f7e99}
+.py-console-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-top:1px solid #202a40;color:#7e8daa;font-size:10px;background:#0b111f}
+.py-console-foot span:first-child{color:#88e7c8;direction:ltr;font:10px ui-monospace,Consolas,monospace}
+.py-footnote{margin:0 2px;color:#7685a2;font-size:10px;line-height:1.85}
+.py-overlay{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(3,7,18,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.py-overlay.show{display:flex}
+.py-dialog{width:min(100%,380px);padding:22px;border:1px solid #49366e;border-radius:21px;background:radial-gradient(ellipse at 50% 0%,#25183f 0%,#121a2d 52%,#0b1120 100%);box-shadow:0 30px 90px #0009;text-align:center;animation:py-appear .2s ease-out}
+@keyframes py-appear{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.py-dialog-icon{display:grid;place-items:center;width:57px;height:57px;margin:0 auto 13px;border-radius:18px;background:linear-gradient(135deg,#a100ff,#5b21b6);color:white;font:900 22px ui-monospace,Consolas,monospace;box-shadow:0 8px 28px #8b24dd35}
+.py-dialog h3{margin:0 0 7px;font-size:18px}
+.py-dialog p{margin:0;color:#b9c5df;font-size:12px;line-height:2}
+.py-dialog-note{display:flex;gap:8px;text-align:right;margin-top:13px;padding:10px;border-radius:11px;background:#0b1425;border:1px solid #283650;color:#aab8d3;font-size:11px;line-height:1.8}
+.py-dialog-note span{flex:none;color:#c4b5fd}
+.py-dialog-actions{display:grid;grid-template-columns:1fr 1.3fr;gap:9px;margin-top:17px}
+.py-dialog-actions .py-btn{min-height:45px;padding:10px;font-size:12px}
+.py-progress-dialog{padding:25px 20px}
+.py-progress-ring{position:relative;display:grid;place-items:center;width:108px;height:108px;margin:0 auto 16px;border-radius:50%;background:conic-gradient(#b34bff var(--progress,0%),#29334b 0);transition:background .22s ease}
+.py-progress-ring:before{content:"";position:absolute;inset:7px;border-radius:50%;background:#11182a}
+.py-progress-value{position:relative;z-index:1;direction:ltr;font:900 23px ui-monospace,Consolas,monospace;color:#f1e8ff}
+.py-progress-caption{margin-top:7px;color:#9eabc7;font-size:10px}
+.py-progress-bar{height:5px;margin-top:16px;overflow:hidden;border-radius:9px;background:#29344e}
+.py-progress-bar span{display:block;width:0;height:100%;border-radius:9px;background:linear-gradient(90deg,#a100ff,#a5f3d0);transition:width .3s ease}
+.py-hidden{display:none!important}
+@media(min-width:700px){.py-shell{gap:15px}.py-intro{font-size:13px}.py-editor{font-size:14px}.py-output{font-size:14px}}
+@media(max-width:420px){body{padding:12px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}.py-shell{gap:11px}.py-brand-icon{flex-basis:47px;height:47px;border-radius:15px;font-size:20px}.py-title{font-size:18px}.py-subtitle{font-size:10px}.py-engine-pill{font-size:9px}.py-intro{padding:9px 11px;font-size:11px}.py-section{border-radius:14px}.py-section-head{min-height:41px;padding:9px 11px}.py-editor{min-height:190px;padding:13px 12px;font-size:12px}.py-actions{grid-template-columns:minmax(0,1fr) auto;gap:7px}.py-btn{min-height:46px;padding:10px 12px;font-size:12px;border-radius:11px}.py-clear{padding-inline:10px}.py-status{font-size:11px;padding:9px 10px}.py-output{min-height:105px;font-size:12px;padding:11px}.py-dialog{padding:19px}.py-dialog h3{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="py-shell">
+  <header class="py-hero">
+    <div class="py-brand-icon" aria-hidden="true">Py</div>
+    <div class="py-hero-main">
+      <div class="py-title-row"><h1 class="py-title">محیط اجرای پایتون</h1><span class="py-engine-pill"><i class="py-engine-dot"></i>CPython · WASM</span></div>
+      <p class="py-subtitle">اجرای کد در مرورگر؛ بدون نصب برنامه روی گوشی</p>
+    </div>
+  </header>
+  <p class="py-intro">کدت را بنویس و «اجرای کد» را بزن. موتور پایتون فقط در اولین اجرا و پس از اجازهٔ تو بارگیری می‌شود؛ اجرای بعدی در همین صفحه از موتور آماده استفاده می‌کند.</p>
+  <section class="py-section" aria-labelledby="pyEditorTitle">
+    <div class="py-section-head"><div class="py-section-name" id="pyEditorTitle"><span class="py-section-mark"></span>ویرایشگر کد</div><span class="py-file-label">main.py</span></div>
+    <div class="py-editor-wrap"><textarea id="pyCode" class="py-editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="کد پایتون" dir="ltr"></textarea></div>
+    <div class="py-editor-tools"><span>Python 3 · تورفتگی ۴ فاصله</span><button id="pySample" class="py-link-btn" type="button">بارگذاری نمونهٔ کد</button></div>
+  </section>
+  <div class="py-actions">
+    <button id="pyRun" class="py-btn py-run" type="button"><span class="py-play" aria-hidden="true">▶</span><span>اجرای کد</span></button>
+    <button id="pyClear" class="py-btn py-clear" type="button">پاک‌کردن خروجی</button>
+  </div>
+  <div id="pyStatus" class="py-status" role="status" aria-live="polite"><span class="py-status-dot"></span><span id="pyStatusText">برای شروع، روی «اجرای کد» بزن.</span></div>
+  <section class="py-section" aria-labelledby="pyOutputTitle">
+    <div class="py-section-head"><div class="py-section-name" id="pyOutputTitle"><span class="py-section-mark" style="background:#49d5a5;box-shadow:0 0 12px #49d5a555"></span>خروجی برنامه</div><span class="py-file-label">OUTPUT</span></div>
+    <pre id="pyOutput" class="py-output empty" aria-live="polite">خروجی اجرای برنامه اینجا نمایش داده می‌شود.</pre>
+    <div class="py-console-foot"><span>STDOUT / STDERR</span><span>خروجی و خطاهای برنامه</span></div>
+  </section>
+  <p class="py-footnote">موتور CPython از طریق Pyodide و WebAssembly دریافت می‌شود. برای بارگیری اولیه اتصال اینترنت لازم است. نصب خودکار بسته‌های جانبی فعال نیست؛ کدهای ناشناس را با احتیاط اجرا کن.</p>
+</main>
+
+<div id="pyConsent" class="py-overlay" role="dialog" aria-modal="true" aria-labelledby="pyConsentTitle" aria-hidden="true">
+  <section class="py-dialog">
+    <div class="py-dialog-icon" aria-hidden="true">Py</div>
+    <h3 id="pyConsentTitle">بارگیری موتور پایتون؟</h3>
+    <p>برای اجرای واقعی کد، باید محیط CPython یک‌بار از اینترنت دریافت و آماده‌سازی شود. این مرحله ممکن است کمی زمان ببرد.</p>
+    <div class="py-dialog-note"><span>ⓘ</span><span>سرعت  دانلود بستگی به سرعت اینترنت شما دارد. حجم کمتر از ۵۰ مگابایت است..</span></div>
+    <div class="py-dialog-actions"><button id="pyConsentNo" class="py-btn py-clear" type="button">فعلاً نه</button><button id="pyConsentYes" class="py-btn py-run" type="button">تأیید و ادامه</button></div>
+  </section>
+</div>
+
+<div id="pyProgressOverlay" class="py-overlay" role="status" aria-live="polite" aria-hidden="true">
+  <section class="py-dialog py-progress-dialog">
+    <div id="pyProgressRing" class="py-progress-ring" style="--progress:0%"><span id="pyProgressValue" class="py-progress-value">0%</span></div>
+    <h3 id="pyProgressTitle">در حال آماده‌سازی پایتون</h3>
+    <p id="pyProgressText">در حال شروع بارگیری موتور…</p>
+    <div class="py-progress-bar"><span id="pyProgressBarFill"></span></div>
+    <div class="py-progress-caption">لطفاً این صفحه را باز نگه دار.</div>
+  </section>
+</div>
+
+<script>
+(function(){'use strict';var initial=__SHAHED_PY_SOURCE__;
+
+var sampleCode='name = "شاهد کد"\nprint("سلام از", name)\n\nfor number in range(1, 4):\n    print("شمارنده:", number)';
+if(!initial||!initial.trim())initial=sampleCode;
+var editor=document.getElementById('pyCode');
+var run=document.getElementById('pyRun');
+var clear=document.getElementById('pyClear');
+var sample=document.getElementById('pySample');
+var statusBox=document.getElementById('pyStatus');
+var statusText=document.getElementById('pyStatusText');
+var output=document.getElementById('pyOutput');
+var consent=document.getElementById('pyConsent');
+var consentYes=document.getElementById('pyConsentYes');
+var consentNo=document.getElementById('pyConsentNo');
+var progressOverlay=document.getElementById('pyProgressOverlay');
+var progressRing=document.getElementById('pyProgressRing');
+var progressValue=document.getElementById('pyProgressValue');
+var progressText=document.getElementById('pyProgressText');
+var progressTitle=document.getElementById('pyProgressTitle');
+var progressFill=document.getElementById('pyProgressBarFill');
+var pyodide=null,loadPromise=null,busy=false,progressTimer=null,progressNow=0,progressLimit=8;
+var consentGranted=window.__shahedConsentGranted===true;
+editor.value=initial;
+function setStatus(message,kind){statusText.textContent=message;statusBox.className='py-status'+(kind?' '+kind:'')}
+function setOutput(text,isError){output.classList.remove('empty');output.textContent=String(text==null?'':text);if(isError)output.style.color='#ffb4c0';else output.style.color='#a5f3d0';output.scrollTop=output.scrollHeight}
+function appendOutput(text,isError){var existing=output.classList.contains('empty')?'':output.textContent;output.classList.remove('empty');output.textContent=(existing?existing+'\n':'')+String(text==null?'':text);output.style.color=isError?'#ffb4c0':'#a5f3d0';if(output.textContent.length>40000)output.textContent=output.textContent.slice(-40000);output.scrollTop=output.scrollHeight}
+function showOverlay(el){el.classList.add('show');el.setAttribute('aria-hidden','false')}
+function hideOverlay(el){el.classList.remove('show');el.setAttribute('aria-hidden','true')}
+function askConsent(){return new Promise(function(resolve){showOverlay(consent);var finished=false;function done(value){if(finished)return;finished=true;hideOverlay(consent);consentYes.removeEventListener('click',yes);consentNo.removeEventListener('click',no);consent.removeEventListener('click',outside);resolve(value)}function yes(){done(true)}function no(){done(false)}function outside(event){if(event.target===consent)done(false)}consentYes.addEventListener('click',yes);consentNo.addEventListener('click',no);consent.addEventListener('click',outside);consentYes.focus()})}
+function saveConsent(){consentGranted=true;try{window.parent.postMessage({type:'shahedcode-python-consent',value:'yes'},'*')}catch(e){}}
+function setProgress(value,label,title){progressNow=Math.max(0,Math.min(100,Math.round(value)));progressRing.style.setProperty('--progress',progressNow+'%');progressValue.textContent=progressNow+'%';progressText.textContent=label;if(title)progressTitle.textContent=title;progressFill.style.width=progressNow+'%'}
+function startProgress(){progressNow=4;progressLimit=22;showOverlay(progressOverlay);setProgress(4,'در حال دریافت فایل آغازگر پایتون…','در حال آماده‌سازی پایتون');if(progressTimer)clearInterval(progressTimer);progressTimer=setInterval(function(){if(progressNow<progressLimit){setProgress(Math.min(progressLimit,progressNow+1),'در حال دریافت فایل آغازگر پایتون…')}},420);return{stage:function(value,label,title){if(progressTimer)clearInterval(progressTimer);progressLimit=Math.max(progressNow,value);setProgress(value,label,title);progressTimer=setInterval(function(){if(progressNow<progressLimit)setProgress(Math.min(progressLimit,progressNow+1),label,title)},450)},done:function(ok){if(progressTimer)clearInterval(progressTimer);progressTimer=null;if(ok){setProgress(100,'موتور آماده است؛ کد در حال اجراست.','آماده شد');setTimeout(function(){hideOverlay(progressOverlay)},450)}else{setProgress(progressNow,'بارگیری کامل نشد؛ اتصال را بررسی و دوباره تلاش کن.','بارگیری ناموفق بود');setTimeout(function(){hideOverlay(progressOverlay)},900)}}}}
+function loadRuntime(progress){if(pyodide)return Promise.resolve(pyodide);if(loadPromise)return loadPromise;loadPromise=new Promise(function(resolve,reject){var script=document.createElement('script');script.src='https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js';script.async=true;script.onload=function(){if(progress)progress.stage(38,'فایل آغازگر دریافت شد؛ موتور در حال راه‌اندازی است.','راه‌اندازی موتور');if(typeof window.loadPyodide!=='function'){reject(new Error('تابع راه‌اندازی Pyodide در فایل دریافت‌شده پیدا نشد.'));return}window.loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/'}).then(function(p){if(progress)progress.stage(86,'محیط پایتون آماده شده؛ در حال تنظیم ورودی و خروجی است.','تقریباً آماده');p.setStdout({batched:function(text){appendOutput(text,false)}});p.setStderr({batched:function(text){appendOutput(text,true)}});pyodide=p;resolve(p)}).catch(reject)};script.onerror=function(){reject(new Error('دریافت موتور پایتون ناموفق بود. اتصال اینترنت یا دسترسی به cdn.jsdelivr.net را بررسی کن.'))};document.head.appendChild(script)}).catch(function(error){loadPromise=null;throw error});return loadPromise}
+function setBusy(value){busy=value;run.disabled=value;run.classList.toggle('busy',value);run.querySelector('span:last-child').textContent=value?'در حال اجرا…':'اجرای کد';run.querySelector('.py-play').textContent=value?'…':'▶'}
+async function runCode(){if(busy)return;var code=editor.value;if(!code.trim()){setStatus('ابتدا کد پایتون بنویس یا نمونهٔ کد را بارگذاری کن.','error');editor.focus();return}setBusy(true);setOutput('',false);var progress=null;try{if(!consentGranted){setStatus('برای دریافت موتور پایتون، تأیید لازم است.','');var accepted=await askConsent();if(!accepted){setStatus('بارگیری شروع نشد. هر زمان آماده بودی دوباره اجرا کن.','');return}saveConsent()}if(!pyodide){progress=startProgress();setStatus('در حال دریافت و آماده‌سازی موتور پایتون…','busy')}else{setStatus('موتور آماده است؛ کد در حال اجراست…','busy')}var p=await loadRuntime(progress);if(progress){progress.done(true);progress=null}p.globals.set('__shahed_user_code',code);p.globals.set('__shahed_input_js',function(prompt){var answer=window.prompt(String(prompt==null||prompt===''?'ورودی پایتون را وارد کن:':prompt));return answer===null?'':answer});var bootstrap="import builtins, sys, time\nif not hasattr(builtins, '__shahed_saved_input'):\n    builtins.__shahed_saved_input = builtins.input\nbuiltins.input = lambda prompt='': __shahed_input_js(prompt)\n__shahed_deadline = time.monotonic() + 12\ndef __shahed_trace(frame, event, arg):\n    if time.monotonic() > __shahed_deadline:\n        raise TimeoutError('اجرای برنامه به دلیل طولانی‌شدن بیش از ۱۲ ثانیه متوقف شد.')\n    return __shahed_trace\nsys.settrace(__shahed_trace)\ntry:\n    exec(compile(__shahed_user_code, '<shahedcode>', 'exec'), {'__name__': '__main__'})\nfinally:\n    sys.settrace(None)\n    builtins.input = builtins.__shahed_saved_input\n";setStatus('کد در CPython در حال اجراست…','busy');await p.runPythonAsync(bootstrap);if(output.textContent.trim()===''){setOutput('برنامه با موفقیت اجرا شد؛ خروجی چاپی نداشت.',false)}setStatus('اجرای برنامه با موفقیت تمام شد.','')}catch(error){var message=String(error&&error.message||error);if(progress)progress.done(false);setStatus('اجرای برنامه با خطا متوقف شد.','error');appendOutput(message,true)}finally{if(!pyodide&&progressTimer){clearInterval(progressTimer);progressTimer=null}setBusy(false)}}
+run.addEventListener('click',runCode);
+clear.addEventListener('click',function(){output.classList.add('empty');output.textContent='خروجی اجرای برنامه اینجا نمایش داده می‌شود.';output.style.color='#6f7e99';setStatus(pyodide?'موتور آماده است؛ می‌توانی دوباره اجرا کنی.':'برای شروع، روی «اجرای کد» بزن.','')});
+sample.addEventListener('click',function(){editor.value=sampleCode;editor.focus();setStatus('نمونهٔ کد بارگذاری شد. برای اجرا دکمه را بزن.','')});
+editor.addEventListener('keydown',function(event){if(event.key==='Tab'){event.preventDefault();var start=editor.selectionStart,end=editor.selectionEnd;editor.setRangeText('    ',start,end,'end')}});
+setStatus(consentGranted?'برای اجرا آماده‌ای؛ اگر لازم باشد موتور آماده‌سازی می‌شود.':'اولین اجرا با درخواست اجازهٔ دریافت موتور شروع می‌شود.','');
+})();
+</scr${"ipt"}>
+</body>
+</html>`;
+  return html.replace("__SHAHED_PY_SOURCE__", pySource);
+}
+
 function buildPreviewHTML(code, type) {
   var source = String(code || "");
   var baseStyle = [
@@ -4031,9 +4213,7 @@ function buildPreviewHTML(code, type) {
   }
 
   if (type === "python") {
-    var pySource = JSON.stringify(source).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
-    var pyRunnerScript = "(function(){'use strict';var initial=__SHAHED_PY_SOURCE__;if(!initial||!initial.trim())initial='print(123)';var editor=document.getElementById('pyCode'),run=document.getElementById('pyRun'),clear=document.getElementById('pyClear'),status=document.getElementById('pyStatus'),output=document.getElementById('pyOutput'),pyodide=null,loadPromise=null,busy=false,seq=0;editor.value=initial;function setStatus(s,bad){status.textContent=s;status.className='py-status'+(bad?' error':'')}function addOutput(s){output.textContent+=(s||'')+'\\\\n';output.scrollTop=output.scrollHeight}var consentKey='shahedcode_py_runtime_consent_v1',consentGranted=window.__shahedConsentGranted===true;function hasConsent(){return consentGranted}function saveConsent(){consentGranted=true;try{window.parent.postMessage({type:'shahedcode-python-consent',value:'yes'},'*')}catch(e){}}function askConsent(){return new Promise(function(resolve){var back=document.createElement('div');back.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.82);backdrop-filter:blur(8px);font-family:Arial,sans-serif;direction:rtl';var card=document.createElement('section');card.style.cssText='width:min(100%,360px);padding:22px;border:1px solid #6045a8;border-radius:20px;background:linear-gradient(145deg,#111a31,#0a1020);box-shadow:0 24px 70px rgba(0,0,0,.55);color:#eef2ff;text-align:center';card.innerHTML=`<div style=\"width:58px;height:58px;display:grid;place-items:center;margin:0 auto 12px;border-radius:18px;background:linear-gradient(135deg,#a100ff,#5b21b6);font-size:27px;font-weight:900;color:white\">Py</div><h3 style=\"margin:0 0 8px;font-size:19px\">آماده‌سازی اجرای پایتون</h3><p style=\"margin:0;color:#b8c4e5;font-size:13px;line-height:1.9\">برای اجرای کد، موتور پایتون باید یک‌بار از اینترنت بارگیری شود. این فرایند چند مگابایت اینترنت مصرف می‌کند و چیزی روی گوشی نصب نمی‌شود.</p><div style=\"display:flex;gap:9px;margin-top:20px\"><button type=\"button\" data-no style=\"flex:1;padding:12px 8px;border:1px solid #33415f;border-radius:11px;background:#182238;color:#dbe5ff;font-weight:700\">فعلاً نه</button><button type=\"button\" data-yes style=\"flex:1;padding:12px 8px;border:0;border-radius:11px;background:linear-gradient(135deg,#a100ff,#6d28d9);color:white;font-weight:800\">بله، ادامه بده</button></div>`;back.appendChild(card);document.body.appendChild(back);function finish(v){back.remove();resolve(v)}card.querySelector('[data-no]').onclick=function(){finish(false)};card.querySelector('[data-yes]').onclick=function(){finish(true)};back.addEventListener('click',function(e){if(e.target===back)finish(false)})})}function showLoadProgress(){var back=document.createElement('div');back.id='pyLoadProgress';back.style.cssText='position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.82);backdrop-filter:blur(8px);font-family:Arial,sans-serif;direction:rtl';back.innerHTML=`<section style=\"width:min(100%,320px);padding:24px 20px;border:1px solid #6045a8;border-radius:20px;background:#0b1224;color:#eef2ff;text-align:center;box-shadow:0 24px 70px #0008\"><div style=\"position:relative;width:100px;height:100px;margin:0 auto 15px\"><svg viewBox=\"0 0 100 100\" style=\"width:100%;height:100%;transform:rotate(-90deg)\"><circle cx=\"50\" cy=\"50\" r=\"42\" fill=\"none\" stroke=\"#26334e\" stroke-width=\"7\"/><circle id=\"pyProgressArc\" cx=\"50\" cy=\"50\" r=\"42\" fill=\"none\" stroke=\"#a855f7\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-dasharray=\"263.89\" stroke-dashoffset=\"263.89\" style=\"transition:stroke-dashoffset .35s\"/></svg><div id=\"pyProgressNum\" style=\"position:absolute;inset:0;display:grid;place-items:center;font:700 23px monospace\">0%</div></div><h3 style=\"margin:0 0 7px;font-size:17px\">در حال آماده‌سازی موتور</h3><p id=\"pyProgressText\" style=\"margin:0;color:#b8c4e5;font-size:12px;line-height:1.8\">در حال دریافت و راه‌اندازی محیط پایتون…</p><p style=\"margin:12px 0 0;color:#7181a4;font-size:10px\">درصد، پیشرفت مراحل آماده‌سازی را نشان می‌دهد؛ نه اندازهٔ دقیق فایل‌های دریافت‌شده.</p></section>`;document.body.appendChild(back);var pct=4,arc=back.querySelector('#pyProgressArc'),num=back.querySelector('#pyProgressNum'),label=back.querySelector('#pyProgressText');var timer=setInterval(function(){pct=Math.min(92,pct+(pct<35?4:pct<65?2:1));num.textContent=pct+'%';arc.style.strokeDashoffset=String(263.89*(1-pct/100));label.textContent=pct<30?'در حال دریافت فایل‌های موتور…':pct<65?'در حال راه‌اندازی محیط پایتون…':'در حال آماده‌سازی برای اجرای کد…'},350);return {done:function(ok){clearInterval(timer);if(ok){num.textContent='100%';arc.style.strokeDashoffset='0';label.textContent='موتور آماده است.'}setTimeout(function(){back.remove()},ok?450:0)}}}function loadRuntime(){if(pyodide)return Promise.resolve(pyodide);if(loadPromise)return loadPromise;loadPromise=new Promise(function(resolve,reject){var script=document.createElement('script');script.src='https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js';script.onload=function(){loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/'}).then(function(p){pyodide=p;p.setStdout({batched:function(s){addOutput(s)}});p.setStderr({batched:function(s){addOutput('[stderr] '+s)}});resolve(p)}).catch(reject)};script.onerror=function(){reject(new Error('بارگیری موتور CPython ناموفق بود؛ اینترنت یا دسترسی به CDN را بررسی کن.'))};document.head.appendChild(script)}).catch(function(e){loadPromise=null;throw e});return loadPromise}async function runCode(){if(busy)return;var code=editor.value;if(!code.trim()){setStatus('ابتدا کد پایتون بنویس.',true);return}busy=true;run.disabled=true;run.textContent='در حال آماده‌سازی…';output.textContent='';var runId=++seq;try{if(!hasConsent()){setStatus('برای بارگیری موتور پایتون، تأیید لازم است.',false);var accepted=await askConsent();if(!accepted){setStatus('بارگیری لغو شد؛ هر زمان خواستی دوباره «اجرای کد» را بزن.',false);return}saveConsent()}var count=(code.match(/\\binput\\s*\\(/g)||[]).length;if(count>8){setStatus('در هر اجرا حداکثر ۸ ورودی مجاز است.',true);return}var inputs=[];for(var i=0;i<count;i++){var v=window.prompt('مقدار ورودی '+(i+1)+' پایتون را وارد کن:');inputs.push(v===null?'':v)}run.textContent='در حال بارگیری موتور…';setStatus('در حال بارگیری موتور پایتون؛ لطفاً صفحه را نبند.',false);var progress=pyodide?null:showLoadProgress(),p;try{p=await loadRuntime();if(progress)progress.done(true)}catch(loadError){if(progress)progress.done(false);throw loadError}if(runId!==seq)return;p.globals.set('__shahed_user_code',code);p.globals.set('__shahed_inputs_json',JSON.stringify(inputs));setStatus('کد در CPython در حال اجراست…',false);var bootstrap=\\\"import builtins, json, sys, time\\\\n__shahed_inputs = iter(json.loads(__shahed_inputs_json))\\\\ndef __shahed_input(prompt=''):\\\\n    if prompt: print(prompt, end='')\\\\n    try: return next(__shahed_inputs)\\\\n    except StopIteration: return ''\\\\nbuiltins.input = __shahed_input\\\\n__shahed_deadline = time.monotonic() + 8\\\\ndef __shahed_trace(frame, event, arg):\\\\n    if time.monotonic() > __shahed_deadline: raise TimeoutError('اجرا به دلیل گذشت بیش از ۸ ثانیه متوقف شد.')\\\\n    return __shahed_trace\\\\nsys.settrace(__shahed_trace)\\\\ntry:\\\\n    exec(compile(__shahed_user_code, '<shahedcode>', 'exec'), globals())\\\\nfinally:\\\\n    sys.settrace(None)\\\\n\\\";await p.runPythonAsync(bootstrap);if(runId===seq)setStatus('اجرای برنامه تمام شد.',false)}catch(e){if(runId===seq){setStatus('خطای اجرای برنامه: '+(e&&e.message||String(e)),true);addOutput(String(e&&e.message||e))}}finally{if(runId===seq){busy=false;run.disabled=false;run.textContent='▶ اجرای دوباره'}}}run.addEventListener('click',runCode);clear.addEventListener('click',function(){output.textContent='';setStatus('خروجی پاک شد.',false)});setStatus(hasConsent()?'آمادهٔ اجرا؛ موتور در صورت نیاز بارگیری می‌شود.':'برای شروع روی «اجرای کد» بزن؛ بارگیری موتور پس از تأیید تو آغاز می‌شود.',false);})();".replace("__SHAHED_PY_SOURCE__", pySource);
-    return "<!doctype html><html lang=\"fa\" dir=\"rtl\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"color-scheme\" content=\"dark\"><title>محیط اجرای واقعی Python | شاهد کد</title><style>" + baseStyle + "body{padding:16px;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));background:#0b1020;color:#e8edff}.py-shell{max-width:980px;margin:auto}.py-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}.py-badge{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#3776ab,#ffd343);color:#111827;font-weight:900;font-size:20px}.python-title{margin:0;font-size:21px}.python-note{color:#aab6d5;font-size:12px;line-height:1.8;margin:6px 0 14px}.py-editor{display:block;width:100%;min-height:230px;resize:vertical;box-sizing:border-box;background:#080d18;color:#e5e7eb;border:1px solid #34415c;border-radius:13px;padding:14px;font:13px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;direction:ltr;text-align:left;tab-size:4;outline:none}.py-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.py-btn{border:0;border-radius:10px;padding:11px 16px;min-height:44px;font-weight:800;cursor:pointer}.py-run{background:linear-gradient(135deg,#a100ff,#6d28d9);color:white}.py-clear{background:#202b42;color:#dbeafe}.py-status{padding:10px 12px;border:1px solid #34415c;border-radius:10px;background:#111a2d;color:#cbd5e1;font-size:12px;line-height:1.8;margin:10px 0}.py-status.error{border-color:#9f3548;color:#fecdd3}.py-console{min-height:110px;max-height:36vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;direction:ltr;text-align:left;background:#050912;border:1px solid #27344b;border-radius:12px;padding:13px;color:#a7f3d0;font:13px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace}.py-footer{color:#8998b7;font-size:11px;line-height:1.8;margin-top:10px}.py-pill{display:inline-block;border:1px solid #315c59;background:#0b2927;color:#99f6e4;padding:3px 8px;border-radius:99px;font-size:10px}@media(max-width:480px){body{padding:11px}.python-title{font-size:18px}.py-editor{min-height:200px;font-size:12px}.py-console{font-size:12px}}</style></head><body><main class=\"py-shell\"><header class=\"py-head\"><span class=\"py-badge\">Py</span><div><h2 class=\"python-title\">اجرای واقعی Python</h2><span class=\"py-pill\">CPython · WebAssembly</span></div></header><p class=\"python-note\">موتور اجرای Python داخل مرورگر اجرا می‌شود. بارگیری اولیه فقط پس از تأیید تو شروع می‌شود و ممکن است چند مگابایت داده دریافت کند؛ این کار افزونه‌ای روی گوشی نصب نمی‌کند.</p><textarea id=\"pyCode\" class=\"py-editor\" spellcheck=\"false\" aria-label=\"کد پایتون\"></textarea><div class=\"py-actions\"><button id=\"pyRun\" class=\"py-btn py-run\" type=\"button\">▶ اجرای کد</button><button id=\"pyClear\" class=\"py-btn py-clear\" type=\"button\">پاک‌کردن خروجی</button></div><div id=\"pyStatus\" class=\"py-status\" role=\"status\" aria-live=\"polite\">برای شروع روی «اجرای کد» بزن.</div><pre id=\"pyOutput\" class=\"py-console\" aria-live=\"polite\"># خروجی برنامه اینجا نمایش داده می‌شود</pre><p class=\"py-footer\">برای کاهش احتمال هنگ‌کردن، اجرای طولانی محدود شده است. نصب خودکار بسته‌های PyPI فعال نیست. اجرای کد در صفحهٔ پیش‌نمایش انجام می‌شود؛ کدهای نامطمئن را اجرا نکن.</p></main><script>" + pyRunnerScript + "<\/script></body></html>";
+    return buildPythonPreviewHTML(source);
   }
 
   if (type === "sql") {
