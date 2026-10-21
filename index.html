@@ -9,7 +9,7 @@
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/mmt315/Shahedcode/main/icon.png">
 <meta name="description" content="شاهد کد؛ دستیار هوشمند برنامه‌نویسی شاهدوب برای آموزش و ساخت پروژه‌های وب.">
 <meta name="color-scheme" content="dark light">
-<title>شاهد کد | Shahedcode</title>
+<title>شاهد کد v25 | Shahedcode</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Lalezar&display=swap" rel="stylesheet">
@@ -2542,7 +2542,7 @@ var CONFIG = {
   API_URL: "https://shahed-ai.game-m-m-t-s0.workers.dev/",
   TRACK_URL: "https://shahed-ai.game-m-m-t-s0.workers.dev/track",
   MODEL: "gpt-6-luna",
-  VERSION: "24.1.0",
+  VERSION: "25.0.0",
   FALLBACK_MODELS: ["gpt-6-luna", "gpt-4o-mini", "gapgpt-gemma-26b-a4b"],
   MAX_HISTORY: 8,
   MAX_TOKENS_CHAT: 3000,
@@ -4002,6 +4002,8 @@ function buildPythonPreviewHTML(source) {
     .replace(/>/g, "\\u003e")
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
+  var consentFlag = "false";
+  try { consentFlag = localStorage.getItem("shahedcode_py_runtime_consent_v1") === "yes" ? "true" : "false"; } catch (e) {}
 
   var html = String.raw`<!doctype html>
 <html lang="fa" dir="rtl">
@@ -4087,11 +4089,11 @@ button{touch-action:manipulation}
   <header class="py-hero">
     <div class="py-brand-icon" aria-hidden="true">Py</div>
     <div class="py-hero-main">
-      <div class="py-title-row"><h1 class="py-title">محیط اجرای پایتون</h1><span class="py-engine-pill"><i class="py-engine-dot"></i>CPython · WASM</span></div>
+      <div class="py-title-row"><h1 class="py-title">محیط اجرای پایتون</h1><span class="py-engine-pill"><i class="py-engine-dot"></i>Skulpt · Python 3</span></div>
       <p class="py-subtitle">اجرای کد در مرورگر؛ بدون نصب برنامه روی گوشی</p>
     </div>
   </header>
-  <p class="py-intro">کدت را بنویس و «اجرای کد» را بزن. موتور پایتون فقط در اولین اجرا و پس از اجازهٔ تو بارگیری می‌شود؛ اجرای بعدی در همین صفحه از موتور آماده استفاده می‌کند.</p>
+  <p class="py-intro">کدت را بنویس و «اجرای کد» را بزن. مفسر پایتون فقط در اولین اجرا و پس از اجازهٔ تو دریافت می‌شود؛ اجرای بعدی در همین صفحه از مفسر آماده استفاده می‌کند.</p>
   <section class="py-section" aria-labelledby="pyEditorTitle">
     <div class="py-section-head"><div class="py-section-name" id="pyEditorTitle"><span class="py-section-mark"></span>ویرایشگر کد</div><span class="py-file-label">main.py</span></div>
     <div class="py-editor-wrap"><textarea id="pyCode" class="py-editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="کد پایتون" dir="ltr"></textarea></div>
@@ -4107,14 +4109,14 @@ button{touch-action:manipulation}
     <pre id="pyOutput" class="py-output empty" aria-live="polite">خروجی اجرای برنامه اینجا نمایش داده می‌شود.</pre>
     <div class="py-console-foot"><span>STDOUT / STDERR</span><span>خروجی و خطاهای برنامه</span></div>
   </section>
-  <p class="py-footnote">موتور CPython از طریق Pyodide و WebAssembly دریافت می‌شود. برای بارگیری اولیه اتصال اینترنت لازم است. نصب خودکار بسته‌های جانبی فعال نیست؛ کدهای ناشناس را با احتیاط اجرا کن.</p>
+  <p class="py-footnote">این محیط از مفسر مرورگری Skulpt استفاده می‌کند؛ برای بارگیری اولیه اتصال اینترنت لازم است. این مفسر بخش بزرگی از کدهای آموزشی Python 3 را اجرا می‌کند، اما جایگزین کامل CPython نیست و از همهٔ بسته‌ها و افزونه‌های بومی پایتون پشتیبانی نمی‌کند.</p>
 </main>
 
 <div id="pyConsent" class="py-overlay" role="dialog" aria-modal="true" aria-labelledby="pyConsentTitle" aria-hidden="true">
   <section class="py-dialog">
     <div class="py-dialog-icon" aria-hidden="true">Py</div>
     <h3 id="pyConsentTitle">بارگیری موتور پایتون؟</h3>
-    <p>برای اجرای واقعی کد، باید محیط CPython یک‌بار از اینترنت دریافت و آماده‌سازی شود. این مرحله ممکن است کمی زمان ببرد.</p>
+    <p>برای اجرای کد باید مفسر پایتون و کتابخانهٔ استاندارد آن یک‌بار از اینترنت دریافت شوند. این روش به WebAssembly وابسته نیست و از خطای راه‌اندازی موتور قبلی جلوگیری می‌کند.</p>
     <div class="py-dialog-note"><span>ⓘ</span><span>چیزی روی گوشی نصب نمی‌شود. دریافت موتور ممکن است از اینترنت مصرف کند؛ درصد مرحلهٔ بعد تخمینی از روند آماده‌سازی است، نه اندازهٔ دقیق فایل‌ها.</span></div>
     <div class="py-dialog-actions"><button id="pyConsentNo" class="py-btn py-clear" type="button">فعلاً نه</button><button id="pyConsentYes" class="py-btn py-run" type="button">تأیید و ادامه</button></div>
   </section>
@@ -4151,33 +4153,76 @@ var progressValue=document.getElementById('pyProgressValue');
 var progressText=document.getElementById('pyProgressText');
 var progressTitle=document.getElementById('pyProgressTitle');
 var progressFill=document.getElementById('pyProgressBarFill');
-var pyodide=null,loadPromise=null,busy=false,progressTimer=null,progressNow=0,progressLimit=8;
-var consentGranted=window.__shahedConsentGranted===true;
+var consentGranted=__SHAHED_CONSENT_FLAG__===true;
+var skulptReady=false,loadPromise=null,busy=false,progressTimer=null,progressNow=0,progressLimit=8,runSequence=0;
 editor.value=initial;
 function setStatus(message,kind){statusText.textContent=message;statusBox.className='py-status'+(kind?' '+kind:'')}
-function setOutput(text,isError){output.classList.remove('empty');output.textContent=String(text==null?'':text);if(isError)output.style.color='#ffb4c0';else output.style.color='#a5f3d0';output.scrollTop=output.scrollHeight}
-function appendOutput(text,isError){var existing=output.classList.contains('empty')?'':output.textContent;output.classList.remove('empty');output.textContent=(existing?existing+'\n':'')+String(text==null?'':text);output.style.color=isError?'#ffb4c0':'#a5f3d0';if(output.textContent.length>40000)output.textContent=output.textContent.slice(-40000);output.scrollTop=output.scrollHeight}
+function setOutput(text,isError){output.classList.remove('empty');output.textContent=String(text==null?'':text);output.style.color=isError?'#ffb4c0':'#a5f3d0';output.scrollTop=output.scrollHeight}
+function appendOutput(text,isError){var existing=output.classList.contains('empty')?'':output.textContent;output.classList.remove('empty');var addition=String(text==null?'':text);if(existing&&addition&&existing.charAt(existing.length-1)!=='\n')existing+='\n';if(addition&&addition.charAt(addition.length-1)!=='\n')addition+='\n';output.textContent=existing+addition;output.style.color=isError?'#ffb4c0':'#a5f3d0';if(output.textContent.length>40000)output.textContent=output.textContent.slice(-40000);output.scrollTop=output.scrollHeight}
 function showOverlay(el){el.classList.add('show');el.setAttribute('aria-hidden','false')}
 function hideOverlay(el){el.classList.remove('show');el.setAttribute('aria-hidden','true')}
 function askConsent(){return new Promise(function(resolve){showOverlay(consent);var finished=false;function done(value){if(finished)return;finished=true;hideOverlay(consent);consentYes.removeEventListener('click',yes);consentNo.removeEventListener('click',no);consent.removeEventListener('click',outside);resolve(value)}function yes(){done(true)}function no(){done(false)}function outside(event){if(event.target===consent)done(false)}consentYes.addEventListener('click',yes);consentNo.addEventListener('click',no);consent.addEventListener('click',outside);consentYes.focus()})}
 function saveConsent(){consentGranted=true;try{window.parent.postMessage({type:'shahedcode-python-consent',value:'yes'},'*')}catch(e){}}
 function setProgress(value,label,title){progressNow=Math.max(0,Math.min(100,Math.round(value)));progressRing.style.setProperty('--progress',progressNow+'%');progressValue.textContent=progressNow+'%';progressText.textContent=label;if(title)progressTitle.textContent=title;progressFill.style.width=progressNow+'%'}
-function startProgress(){progressNow=3;progressLimit=18;showOverlay(progressOverlay);setProgress(3,'در حال برقراری اتصال به منبع پایتون…','آماده‌سازی پایتون');if(progressTimer)clearInterval(progressTimer);progressTimer=setInterval(function(){if(progressNow<progressLimit){setProgress(Math.min(progressLimit,progressNow+1),'در حال برقراری اتصال…')}},650);return{stage:function(value,label,title){if(progressTimer)clearInterval(progressTimer);var target=Math.max(progressNow,Math.min(94,value));progressLimit=target;setProgress(target,label,title);progressTimer=setInterval(function(){if(progressNow<progressLimit)setProgress(Math.min(progressLimit,progressNow+1),label,title)},700)},done:function(ok){if(progressTimer)clearInterval(progressTimer);progressTimer=null;if(ok){setProgress(100,'موتور آماده است؛ کد در حال اجراست.','آماده شد');setTimeout(function(){hideOverlay(progressOverlay)},450)}else{setProgress(progressNow,'دریافت از منابع جایگزین هم موفق نشد. جزئیات در بخش خروجی آمده است.','بارگیری ناموفق بود');setTimeout(function(){hideOverlay(progressOverlay)},1600)}}}}
-function loadScriptSource(url){return new Promise(function(resolve,reject){var existing=document.querySelector('script[data-shahed-py-loader="1"]');if(existing)existing.remove();try{window.loadPyodide=undefined}catch(e){}var script=document.createElement('script');script.src=url;script.async=true;script.dataset.shahedPyLoader='1';var settled=false;var timer=setTimeout(function(){if(settled)return;settled=true;script.remove();reject(new Error('مهلت دریافت فایل راه‌انداز تمام شد.'))},30000);script.onload=function(){if(settled)return;settled=true;clearTimeout(timer);if(typeof window.loadPyodide!=='function')reject(new Error('فایل دریافتی تابع loadPyodide را ندارد.'));else resolve()};script.onerror=function(){if(settled)return;settled=true;clearTimeout(timer);script.remove();reject(new Error('دریافت فایل راه‌انداز از این منبع ناموفق بود.'))};document.head.appendChild(script)})}
-function withTimeout(promise,ms){return new Promise(function(resolve,reject){var timer=setTimeout(function(){reject(new Error('بارگیری فایل‌های اصلی بیش از ۶۰ ثانیه طول کشید.'))},ms);Promise.resolve(promise).then(function(value){clearTimeout(timer);resolve(value)},function(error){clearTimeout(timer);reject(error)})})}
-function loadRuntime(progress){if(pyodide)return Promise.resolve(pyodide);if(loadPromise)return loadPromise;loadPromise=(async function(){var sources=[{name:'منبع اصلی',script:'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js',base:'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/'},{name:'مسیر جایگزین Fastly',script:'https://fastly.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js',base:'https://fastly.jsdelivr.net/pyodide/v0.27.7/full/'},{name:'مسیر جایگزین Gcore',script:'https://gcore.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js',base:'https://gcore.jsdelivr.net/pyodide/v0.27.7/full/'},{name:'بستهٔ جایگزین npm',script:'https://cdn.jsdelivr.net/npm/pyodide@0.27.7/pyodide.js',base:'https://cdn.jsdelivr.net/npm/pyodide@0.27.7/'},{name:'منبع جایگزین Unpkg',script:'https://unpkg.com/pyodide@0.27.7/pyodide.js',base:'https://unpkg.com/pyodide@0.27.7/'}];var failures=[];for(var i=0;i<sources.length;i++){var source=sources[i];try{if(progress)progress.stage(Math.max(progressNow,Math.min(34+i*3,60)),'در حال اتصال به '+source.name+'…','دریافت موتور پایتون');await loadScriptSource(source.script);if(progress)progress.stage(42+i*4,'فایل راه‌انداز دریافت شد؛ در حال دریافت فایل‌های اصلی پایتون…','بارگیری فایل‌های اصلی');var p=await withTimeout(window.loadPyodide({indexURL:source.base}),60000);if(progress)progress.stage(88,'موتور آماده شده؛ در حال تنظیم ورودی و خروجی…','تقریباً آماده');p.setStdout({batched:function(text){appendOutput(text,false)}});p.setStderr({batched:function(text){appendOutput(text,true)}});pyodide=p;return p}catch(error){failures.push(source.name+': '+String(error&&error.message||error));if(progress){progress.stage(Math.min(48+i*14,76),'این منبع پاسخ نداد؛ در حال تلاش خودکار با منبع جایگزین…','تلاش مجدد');}try{var loaders=document.querySelectorAll('script[data-shahed-py-loader="1"]');for(var j=0;j<loaders.length;j++)loaders[j].remove();window.loadPyodide=undefined}catch(ignore){}}}throw new Error('دریافت موتور پایتون از همهٔ منابع ناموفق بود. اگر اینترنت محدود است، یک‌بار با اینترنت دیگری امتحان کن. جزئیات: '+failures.join(' | '))})().catch(function(error){loadPromise=null;throw error});return loadPromise}
-function setBusy(value){busy=value;run.disabled=value;run.classList.toggle('busy',value);run.querySelector('span:last-child').textContent=value?'در حال اجرا…':'اجرای کد';run.querySelector('.py-play').textContent=value?'…':'▶'}
-async function runCode(){if(busy)return;var code=editor.value;if(!code.trim()){setStatus('ابتدا کد پایتون بنویس یا نمونهٔ کد را بارگذاری کن.','error');editor.focus();return}setBusy(true);setOutput('',false);var progress=null;try{if(!consentGranted){setStatus('برای دریافت موتور پایتون، تأیید لازم است.','');var accepted=await askConsent();if(!accepted){setStatus('بارگیری شروع نشد. هر زمان آماده بودی دوباره اجرا کن.','');return}saveConsent()}if(!pyodide){progress=startProgress();setStatus('در حال دریافت و آماده‌سازی موتور پایتون…','busy')}else{setStatus('موتور آماده است؛ کد در حال اجراست…','busy')}var p=await loadRuntime(progress);if(progress){progress.done(true);progress=null}p.globals.set('__shahed_user_code',code);p.globals.set('__shahed_input_js',function(prompt){var answer=window.prompt(String(prompt==null||prompt===''?'ورودی پایتون را وارد کن:':prompt));return answer===null?'':answer});var bootstrap="import builtins, sys, time\nif not hasattr(builtins, '__shahed_saved_input'):\n    builtins.__shahed_saved_input = builtins.input\nbuiltins.input = lambda prompt='': __shahed_input_js(prompt)\n__shahed_deadline = time.monotonic() + 12\ndef __shahed_trace(frame, event, arg):\n    if time.monotonic() > __shahed_deadline:\n        raise TimeoutError('اجرای برنامه به دلیل طولانی‌شدن بیش از ۱۲ ثانیه متوقف شد.')\n    return __shahed_trace\nsys.settrace(__shahed_trace)\ntry:\n    exec(compile(__shahed_user_code, '<shahedcode>', 'exec'), {'__name__': '__main__'})\nfinally:\n    sys.settrace(None)\n    builtins.input = builtins.__shahed_saved_input\n";setStatus('کد در CPython در حال اجراست…','busy');await p.runPythonAsync(bootstrap);if(output.textContent.trim()===''){setOutput('برنامه با موفقیت اجرا شد؛ خروجی چاپی نداشت.',false)}setStatus('اجرای برنامه با موفقیت تمام شد.','')}catch(error){var message=String(error&&error.message||error);if(progress)progress.done(false);setStatus('اجرای برنامه با خطا متوقف شد.','error');appendOutput(message,true)}finally{if(!pyodide&&progressTimer){clearInterval(progressTimer);progressTimer=null}setBusy(false)}}
+function startProgress(){progressNow=3;progressLimit=8;showOverlay(progressOverlay);setProgress(3,'در حال آماده‌سازی مفسر…','آماده‌سازی پایتون');if(progressTimer)clearInterval(progressTimer);progressTimer=setInterval(function(){if(progressNow<progressLimit)setProgress(Math.min(progressLimit,progressNow+1),'در حال اتصال به منبع دریافت…')},500);return{stage:function(value,label,title){if(progressTimer)clearInterval(progressTimer);progressLimit=Math.max(progressNow,Math.min(94,Math.round(value)));progressText.textContent=label;if(title)progressTitle.textContent=title;progressTimer=setInterval(function(){if(progressNow<progressLimit)setProgress(Math.min(progressLimit,progressNow+1),label,title)},420)},done:function(ok){if(progressTimer)clearInterval(progressTimer);progressTimer=null;if(ok){setProgress(100,'مفسر آماده است؛ اجرای کد شروع می‌شود.','آماده شد');setTimeout(function(){hideOverlay(progressOverlay)},400)}else{setProgress(progressNow,'آماده‌سازی ناموفق بود؛ جزئیات در خروجی ثبت شد.','بارگیری ناموفق بود');setTimeout(function(){hideOverlay(progressOverlay)},1000)}}}}
+function loadScript(url,label,timeoutMs){return new Promise(function(resolve,reject){var script=document.createElement('script'),settled=false;var timer=setTimeout(function(){if(settled)return;settled=true;script.onload=script.onerror=null;try{script.remove()}catch(e){}reject(new Error(label+' مهلت دریافتش تمام شد.'))},timeoutMs||16000);script.async=true;script.src=url;script.onload=function(){if(settled)return;settled=true;clearTimeout(timer);resolve(url)};script.onerror=function(){if(settled)return;settled=true;clearTimeout(timer);try{script.remove()}catch(e){}reject(new Error(label+' از این منبع دریافت نشد.'))};document.head.appendChild(script)})}
+function loadSkulpt(progress){if(skulptReady&&window.Sk)return Promise.resolve(window.Sk);if(loadPromise)return loadPromise;loadPromise=(async function(){
+  var sources=[
+    {name:'jsDelivr',core:'https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js',stdlib:'https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js'},
+    {name:'Fastly',core:'https://fastly.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js',stdlib:'https://fastly.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js'},
+    {name:'Gcore',core:'https://gcore.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js',stdlib:'https://gcore.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js'},
+    {name:'Unpkg',core:'https://unpkg.com/skulpt@1.2.0/dist/skulpt.min.js',stdlib:'https://unpkg.com/skulpt@1.2.0/dist/skulpt-stdlib.js'}
+  ];
+  var failures=[];
+  for(var i=0;i<sources.length;i++){
+    var source=sources[i];
+    try{
+      if(progress)progress.stage(12+i*7,'در حال دریافت مفسر از '+source.name+'…','دریافت مفسر Python 3');
+      try{window.Sk=undefined}catch(ignore){}
+      await loadScript(source.core,'فایل اصلی مفسر ('+source.name+')',18000);
+      if(!window.Sk||!window.Sk.configure||!window.Sk.misceval)throw new Error('فایل اصلی بارگیری شد، اما API مفسر ایجاد نشد.');
+      if(progress)progress.stage(42+i*7,'مفسر دریافت شد؛ در حال دریافت کتابخانهٔ استاندارد…','دریافت کتابخانه‌ها');
+      await loadScript(source.stdlib,'کتابخانهٔ استاندارد ('+source.name+')',22000);
+      if(!window.Sk.builtinFiles||!window.Sk.builtinFiles.files)throw new Error('کتابخانهٔ استاندارد در فایل دریافتی پیدا نشد.');
+      window.Sk.configure({
+        output:function(text){appendOutput(text,false)},
+        read:function(path){var files=window.Sk&&window.Sk.builtinFiles&&window.Sk.builtinFiles.files;if(!files||files[path]===undefined)throw new Error('کتابخانه یا فایل داخلی پایتون پیدا نشد: '+path);return files[path]},
+        inputfun:function(prompt){var answer=window.prompt(String(prompt||'ورودی پایتون را وارد کن:'));return answer===null?'':answer},
+        inputfunTakesPrompt:true,
+        __future__:window.Sk.python3,
+        execLimit:15000,
+        yieldLimit:1000
+      });
+      if(progress)progress.stage(84,'در حال اجرای آزمایش داخلی مفسر…','آزمون صحت راه‌اندازی');
+      await window.Sk.misceval.asyncToPromise(function(){return window.Sk.importMainWithBody('__shahedcode_probe__',false,'2 + 3',true)});
+      skulptReady=true;if(progress)progress.stage(95,'آزمون داخلی موفق شد؛ مفسر آماده است.','تکمیل آماده‌سازی');
+      return window.Sk;
+    }catch(error){var reason=String(error&&error.message||error);failures.push((i+1)+'. '+source.name+': '+reason);try{var scripts=document.querySelectorAll('script[src*="skulpt"]');for(var j=0;j<scripts.length;j++){if(scripts[j].src===source.core||scripts[j].src===source.stdlib)scripts[j].remove()}}catch(ignore){}try{window.Sk=undefined}catch(ignore2){}if(progress)progress.stage(18+i*17,'این منبع آماده نشد؛ مسیر بعدی بررسی می‌شود.','تلاش جایگزین '+(i+1)+' از '+sources.length)}
+  }
+  throw new Error('دریافت مفسر پایتون از همهٔ منابع ناموفق بود. این نسخه به WebAssembly نیاز ندارد؛ ممکن است CDNها در شبکه مسدود باشند. جزئیات هر تلاش:\n'+failures.join('\n'));
+})().catch(function(error){loadPromise=null;throw error});return loadPromise}
+function setBusy(value){busy=value;run.disabled=value;sample.disabled=value;run.classList.toggle('busy',value);run.querySelector('span:last-child').textContent=value?'در حال اجرا…':'اجرای کد';run.querySelector('.py-play').textContent=value?'…':'▶'}
+async function runCode(){if(busy)return;var code=editor.value;if(!code.trim()){setStatus('ابتدا کد پایتون بنویس یا نمونهٔ کد را بارگذاری کن.','error');editor.focus();return}setBusy(true);setOutput('',false);var progress=null;try{
+  if(!consentGranted){setStatus('برای دریافت مفسر پایتون، تأیید لازم است.','');var accepted=await askConsent();if(!accepted){setStatus('دریافت شروع نشد؛ هر زمان آماده بودی دوباره اجرا کن.','');return}saveConsent()}
+  if(!skulptReady){progress=startProgress();setStatus('در حال دریافت مفسر پایتون و کتابخانهٔ استاندارد…','busy')}else setStatus('مفسر آماده است؛ کد در حال اجراست…','busy');
+  await loadSkulpt(progress);if(progress){progress.done(true);progress=null}
+  setStatus('کد در مفسر Python 3 در حال اجراست…','busy');
+  window.Sk.configure({output:function(text){appendOutput(text,false)},read:function(path){var files=window.Sk&&window.Sk.builtinFiles&&window.Sk.builtinFiles.files;if(!files||files[path]===undefined)throw new Error('کتابخانهٔ پایتون پیدا نشد: '+path);return files[path]},inputfun:function(prompt){var answer=window.prompt(String(prompt||'ورودی پایتون را وارد کن:'));return answer===null?'':answer},inputfunTakesPrompt:true,__future__:window.Sk.python3,execLimit:15000,yieldLimit:1000});
+  var thisRun=++runSequence;
+  await window.Sk.misceval.asyncToPromise(function(){return window.Sk.importMainWithBody('__shahedcode_user_'+thisRun,false,code,true)});
+  if(output.classList.contains('empty')||!output.textContent.trim())setOutput('برنامه با موفقیت اجرا شد؛ خروجی چاپی نداشت.',false);
+  setStatus('اجرای برنامه با موفقیت تمام شد.','');
+}catch(error){if(progress)progress.done(false);var message=String(error&&error.message||error);setStatus('اجرای برنامه با خطا متوقف شد.','error');if(output.textContent.trim())appendOutput('خطا: '+message,true);else setOutput(message,true)}finally{if(progressTimer){clearInterval(progressTimer);progressTimer=null}setBusy(false)}}
 run.addEventListener('click',runCode);
-clear.addEventListener('click',function(){output.classList.add('empty');output.textContent='خروجی اجرای برنامه اینجا نمایش داده می‌شود.';output.style.color='#6f7e99';setStatus(pyodide?'موتور آماده است؛ می‌توانی دوباره اجرا کنی.':'برای شروع، روی «اجرای کد» بزن.','')});
+clear.addEventListener('click',function(){output.classList.add('empty');output.textContent='خروجی اجرای برنامه اینجا نمایش داده می‌شود.';output.style.color='#6f7e99';setStatus(skulptReady?'مفسر آماده است؛ می‌توانی دوباره اجرا کنی.':'برای شروع، روی «اجرای کد» بزن.','')});
 sample.addEventListener('click',function(){editor.value=sampleCode;editor.focus();setStatus('نمونهٔ کد بارگذاری شد. برای اجرا دکمه را بزن.','')});
 editor.addEventListener('keydown',function(event){if(event.key==='Tab'){event.preventDefault();var start=editor.selectionStart,end=editor.selectionEnd;editor.setRangeText('    ',start,end,'end')}});
-setStatus(consentGranted?'برای اجرا آماده‌ای؛ اگر لازم باشد موتور آماده‌سازی می‌شود.':'اولین اجرا با درخواست اجازهٔ دریافت موتور شروع می‌شود.','');
+setStatus(consentGranted?'مفسر در صورت نیاز آماده می‌شود؛ برای اجرا دکمه را بزن.':'اولین اجرا با درخواست اجازهٔ دریافت مفسر شروع می‌شود.','');
 })();
 </scr${"ipt"}>
 </body>
 </html>`;
-  return html.replace("__SHAHED_PY_SOURCE__", pySource);
+  return html.replace("__SHAHED_CONSENT_FLAG__", consentFlag).replace("__SHAHED_PY_SOURCE__", pySource);
 }
 
 function buildPreviewHTML(code, type) {
@@ -4490,19 +4535,19 @@ function gameSystemPrompt() {
     "طراحی بصری در حد محصول نهایی اما خلوت: یک نقطهٔ تمرکز، زمین بازی بزرگ و واضح، حداکثر ۳ رنگ اصلی، HUD فشرده و فقط اطلاعات لازم؛ از کارت‌ها، متن‌ها، افکت‌ها و پنل‌های تزئینی زیاد که فضای بازی را می‌گیرند پرهیز کن.",
     "قانون سختِ سادگی رابط: فقط کنترل‌های واقعاً لازم برای مکانیک همان بازی را اضافه کن؛ به‌طور پیش‌فرض حداکثر ۲ دکمهٔ رابط (مثلاً شروع و شروع مجدد) و کنترل‌های بازی فقط در صورت نیاز. دکمهٔ تنظیمات، راهنما، صدا، فروشگاه، پوسته، مرحله‌گزینی، منوهای اضافی، کارت‌های تزئینی و نوارهای تکراری نساز مگر کاربر صریحاً بخواهد یا برای اجرای مکانیک ضروری باشند. هر ویژگی، آمار، جان، ارز، مرحله یا جلوه‌ای که در درخواست کاربر نیامده و برای بازی لازم نیست حذف شود. درخواست کاربر را دقیق اجرا کن و قابلیت‌های اضافه را خودسرانه اختراع نکن.",
     "بازی باید در ۳ ثانیه قابل فهم باشد: دستورالعمل کوتاه، کنترل‌های واضح و بزرگ، هدف قابل مشاهده و بازخورد فوری پس از هر حرکت؛ اولویت با بازی‌پذیری است نه تزئینات.",
-    "برای بازی‌های اکشن/حرکتی، یک حلقهٔ gameplay واقعی بساز: ورودی بازیکن، تغییر موقعیت/وضعیت، برخورد یا هدف، امتیاز/سلامتی، افزایش چالش و شرط پایان. برای بازی‌های پازلی، قوانین و شرط برد/باخت دقیق باشند؛ صرفاً انیمیشن یا کلیک‌هایی که فقط رنگ را عوض می‌کنند قابل قبول نیست.",
-    "همهٔ دکمه‌ها را در یک فهرست داخلی مشخص کن و برای هر کدام عملکرد واقعی بنویس؛ دکمهٔ شروع، مکث/ادامه، شروع مجدد و کنترل‌های اصلی را پس از ساخت بررسی کن. هیچ کنترل بی‌اثر، روی‌هم‌افتاده یا خارج از محدودهٔ قابل لمس باقی نماند.",
+    "برای بازی‌های اکشن/حرکتی، حلقهٔ واقعی گیم‌پلی شامل ورودی، تغییر وضعیت، برخورد/هدف و شرط پایان را پیاده‌سازی کن. امتیاز، جان، سلامتی، زمان‌سنج، افزایش سختی و مرحله فقط وقتی اضافه شوند که در درخواست یا قوانین طبیعی همان بازی لازم باشند؛ این موارد را به هر بازی تحمیل نکن. بازی پازلی باید قوانین و شرط برد/باخت دقیق داشته باشد.",
+    "پیش از تحویل، فقط کنترل‌هایی را بررسی کن که واقعاً در طرح نهایی وجود دارند. مکث، شروع مجدد، تنظیمات و منوهای تازه را خودسرانه اضافه نکن؛ هیچ کنترل موجود نباید بی‌اثر، روی‌هم‌افتاده یا خارج از محدودهٔ قابل لمس باشد.",
     "از تزئینات مزاحم، چندین نوار کناری، متن طولانی، پنل‌های تو در تو، ذرات پرتعداد و انیمیشن‌های دائمی غیرضروری استفاده نکن. زمین بازی و کنترل‌ها باید روی موبایل فوراً قابل استفاده باشند.",
     "دکمهٔ شروع باید واقعاً حلقهٔ بازی را راه بیندازد؛ تمام دکمه‌ها باید handler عملی داشته باشند؛ هیچ دکمهٔ تزئینی یا placeholder مجاز نیست.",
-    "پیش از تولید، معماری را ساده و قابل‌آزمایش انتخاب کن: یک منبع حقیقت برای وضعیت بازی، توابع مشخص startGame/pauseGame/resumeGame/resetGame/endGame، و event listenerهایی که فقط یک بار ثبت می‌شوند. از تکرار حلقه‌ها، handlerهای inline وابسته به متغیرهای global و کد ناقص پرهیز کن.",
+    "پیش از تولید، معماری را ساده و قابل‌آزمایش انتخاب کن: یک منبع حقیقت برای وضعیت بازی، فقط توابعی برای چرخه‌هایی که واقعاً در همین بازی لازم‌اند، و event listenerهایی که فقط یک بار ثبت می‌شوند. توابع مکث، تنظیمات یا شروع مجدد را وقتی نساز که در بازی کاربردی ندارند. از تکرار حلقه‌ها، handlerهای inline وابسته به متغیرهای global و کد ناقص پرهیز کن.",
     "برای بازی‌های نوبتی، تمام تغییر وضعیت را از یک تابع واحد عبور بده و بعد از برد/باخت/مساوی ورودی‌ها را قفل کن. برای بازی‌های real-time، requestAnimationFrame را هنگام pause/hidden متوقف و هنگام resume فقط یک بار راه‌اندازی کن.",
     "هنگام پایان واقعی بازی، اگر امتیاز وجود دارد مقدار آن را بگیر و فقط این اعلان را امن ارسال کن: try{parent.postMessage({source:'shahedcode-game',type:'game-over',score:score},'*')}catch(e){}؛ اگر متغیر score وجود ندارد، اعلان را بدون امتیاز بفرست.",
     "برای بازی real-time از requestAnimationFrame با deltaTime محدود استفاده کن؛ resize و orientation موبایل را مدیریت کن؛ حلقهٔ بازی نباید چند بار موازی شروع شود.",
     "کنترل کامل صفحه‌کلید دسکتاپ و کنترل لمسی/Pointer Events موبایل لازم است. برای دکمه‌های بازی از pointerdown یا click سازگار و اندازهٔ هدف حداقل 44×44px استفاده کن؛ touch-action را فقط روی ناحیهٔ کنترل/بازی تنظیم کن تا صفحه در حین بازی ناخواسته اسکرول نشود.",
     "اگر بازی دوز یا Tic-Tac-Toe است: برد را با ترکیب‌های برندهٔ دقیق بررسی کن؛ نشانگر خط برد را در یک لایهٔ مستقل بساز؛ در هر شروع دوباره و شروع دور بعد، علاوه بر خالی‌کردن خانه‌ها، همهٔ عناصر خط برد (SVG/path/div)، کلاس‌های win/winner/finished، وضعیت gameOver و تایمرها را کاملاً پاک کن. هم در برد بازیکن، هم برد ربات و هم مساوی، با کلیک شروع دوباره صفحه باید فوراً به ۹ خانهٔ خالی برگردد؛ هیچ خط قدیمی روی دور بعد نماند. حرکت ربات باید فقط در خانهٔ خالی انجام شود و پس از پایان دور دیگر حرکتی ثبت نشود.",
     "HUD و زمین بازی را برای عرض 320px به بالا، صفحهٔ عمودی و افقی، safe-area و تغییر اندازهٔ iframe تطبیق بده؛ از اندازه‌های ثابت نامناسب پرهیز کن.",
-    "منطق برخورد، امتیاز، افزایش سختی/مرحله، برد/باخت و reset را واقعاً پیاده‌سازی کن؛ هر چیزی که ادعا می‌شود باید کار کند.",
-    "گرافیک را با Canvas/SVG/CSS داخلی حرفه‌ای بساز: عمق بصری، پالت منسجم، انیمیشن هدفمند و افکت‌های سبک؛ بازی نباید مبتدی یا صرفاً یک دکمه و متن باشد.",
+    "فقط قوانین اصلی و شرط‌های برد/باخت/پایان مربوط به درخواست را درست پیاده‌سازی کن. امتیاز، افزایش سختی، مرحله یا reset اضافه را فقط اگر برای مکانیک خواسته‌شده لازم است بیاور؛ هر قابلیتی که نمایش داده می‌شود باید واقعاً کار کند.",
+    "ظاهر را با Canvas/SVG/CSS داخلی تمیز، باکیفیت و منسجم بساز؛ کیفیت به معنی شلوغی نیست. بازی ساده باید طراحی دقیق اما مینیمال داشته باشد؛ افکت، انیمیشن، HUD یا تزئینات اضافه فقط وقتی بیاید که خوانایی یا گیم‌پلی را بهتر کند.",
     "صدا اختیاری است؛ اگر Web Audio API استفاده می‌کنی، فقط پس از تعامل کاربر فعالش کن و خرابی صدا نباید بازی را متوقف کند.",
     "برای رکورد، از localStorage فقط داخل try/catch استفاده کن و در خطای SecurityError به حافظهٔ موقت برگرد؛ محیط اجرا در iframe ایزوله است.",
     "در ابتدا خطاهای JS را پیش‌بینی کن؛ عناصر DOM را پس از آماده‌شدن سند بگیر؛ متغیرها را تعریف کن؛ هیچ تابع یا شناسهٔ ارجاع‌شده‌ای جا نیفتد.",
