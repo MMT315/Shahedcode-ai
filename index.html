@@ -2522,6 +2522,7 @@ html[data-theme="custom"] .dropdown-item[aria-checked="true"]{background:var(--a
           <label class="account-field"><span>نام کاربری</span><input id="accountUsername" name="username" type="text" maxlength="32" autocomplete="username" autocapitalize="none" required placeholder="مثلاً shahed_user"></label>
           <label class="account-field"><span>شماره موبایل</span><input id="accountPhone" name="phone" type="tel" maxlength="24" inputmode="tel" autocomplete="tel" pattern="(09[0-9]{9}|\+?98[0-9]{10}|0098[0-9]{10})" required placeholder="09123456789"></label>
         </div>
+        <label class="account-field" id="signupPremiumCodeWrap"><span>کد پرمیوم (اختیاری)</span><input id="premiumCodeSignup" name="premiumCode" type="text" maxlength="100" autocomplete="off" autocapitalize="characters" placeholder="اگر کد داری وارد کن"></label>
         <div class="captcha-panel captcha-panel-v29">
           <div class="captcha-art-wrap"><canvas id="captchaCanvas" width="240" height="76" aria-label="CAPTCHA"></canvas><button id="captchaRefresh" class="icon-btn captcha-refresh" type="button" aria-label="Refresh CAPTCHA">↻</button></div>
           <input id="captchaAnswer" class="captcha-answer" type="text" inputmode="text" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" required placeholder="ENTER CODE">
@@ -5368,10 +5369,11 @@ function updateV27ProfileUI(profile) {
   V27.profile = profile || null;
   var name = profile ? [profile.firstName, profile.lastName].filter(Boolean).join(" ").trim() : "";
   var username = profile && profile.username ? "@" + profile.username.replace(/^@/, "") : "";
+  if (profile && profile.userId) { try { var idNode = document.getElementById("v1UserId"); if (idNode) idNode.textContent = "شناسهٔ کاربری: " + profile.userId; } catch (e) {} }
   var imgSrc = profile && profile.avatarData ? profile.avatarData : (profile && profile.avatarUrl ? profile.avatarUrl : V27.DEFAULT_AVATAR);
   var sideName = byId("sidebarProfileName"), sideSub = byId("sidebarProfileSub"), sideAvatar = byId("sidebarAvatar");
   if (sideName) sideName.textContent = name || "پنل کاربری";
-  if (sideSub) sideSub.textContent = username || (profile ? "حساب فعال" : "ورود یا ساخت حساب");
+  if (sideSub) sideSub.textContent = (username || (profile ? "حساب فعال" : "ورود یا ساخت حساب")) + (profile && profile.userId ? " · شناسه " + profile.userId : "");
   if (sideAvatar) { sideAvatar.onerror = function () { sideAvatar.onerror = null; sideAvatar.src = V27.DEFAULT_AVATAR; }; sideAvatar.src = imgSrc; }
   var preview = byId("accountAvatarPreview");
   if (preview) { preview.onerror = function () { preview.onerror = null; preview.src = V27.DEFAULT_AVATAR; }; preview.src = imgSrc; }
@@ -5491,7 +5493,7 @@ async function submitV27Account(event) {
     if (!/^[A-HJ-NP-Z2-9]{6}$/.test(answer.toUpperCase()) || !V27.captchaValue || answer.toUpperCase() !== V27.captchaValue) { createV27Captcha(); throw new Error("کد کپچا نادرست است؛ تصویر تازه‌ای نمایش داده شد."); }
     var identity = buildV27IdentityFromForm();
     
-    submit.disabled = true; submit.textContent = "در حال ذخیره…"; accountStatus("در حال بررسی حساب…", "");
+    submit.disabled = true; submit.textContent = "در حال ذخیره…"; accountStatus("", "");
     var localAccounts = readV27Accounts();
     var localKey = normalizeV27Identity(identity);
     var localMatch = localAccounts[localKey] || (V27.profile && normalizeV27Identity(V27.profile) === localKey ? V27.profile : null);
@@ -5513,8 +5515,29 @@ async function submitV27Account(event) {
     profile = Object.assign({}, profile, identity, { updatedAt: new Date().toISOString() });
     if (!profile.avatarData && localMatch && localMatch.avatarData) profile.avatarData = localMatch.avatarData;
     updateV27LocalAccount(profile);
+    var premiumSignupCode = String((byId("premiumCodeSignup") && byId("premiumCodeSignup").value) || "").trim();
+    var premiumActivatedDuringSignup = false;
+    var premiumSignupNotice = "";
+    if (premiumSignupCode && cloud) {
+      accountStatus("", "");
+      try {
+        var premiumResponse = await v27Api("/premium/redeem", { identity: identity, code: premiumSignupCode }, 12000);
+        if (premiumResponse && premiumResponse.ok && premiumResponse.premium) {
+          profile.premium = true;
+          profile.premiumActivatedAt = premiumResponse.activatedAt || new Date().toISOString();
+          profile.premiumExpiresAt = premiumResponse.expiresAt || null;
+          updateV27LocalAccount(profile);
+          premiumActivatedDuringSignup = true;
+          premiumSignupNotice = " عضویت پرمیوم هم فعال شد.";
+        }
+      } catch (premiumError) {
+        premiumSignupNotice = " حساب ساخته شد، اما کد پرمیوم فعال نشد: " + String(premiumError.message || premiumError).slice(0, 140);
+      }
+    } else if (premiumSignupCode && !cloud) {
+      premiumSignupNotice = " برای فعال‌سازی کد پرمیوم باید اتصال حساب ابری برقرار باشد.";
+    }
     if (V27.pendingAvatar) {
-      accountStatus("در حال ذخیره و ارسال تصویر…", "");
+      accountStatus("", "");
       var profileResult = null;
       try {
         profileResult = await v27Api("/profile", { identity: identity, avatarData: V27.pendingAvatar, consent: true }, 18000);
@@ -5524,11 +5547,11 @@ async function submitV27Account(event) {
         if (!profileResult || profileResult.ok !== true) throw new Error("سرور تصویر را تأیید نکرد.");
         var telegramSent = profileResult.telegram === "sent";
         var note = telegramSent ? "عکس ذخیره شد و به تلگرام مدیر ارسال شد." : (profileResult.telegramReason === "telegram_not_configured" ? "عکس ذخیره شد؛ تنظیمات تلگرام Worker کامل نیست." : "عکس ذخیره شد؛ ارسال تلگرامی تأیید نشد.");
-        var noteNode = byId("accountSaveNote"); if (noteNode) { noteNode.hidden = false; noteNode.textContent = note; }
+        var noteNode = byId("accountSaveNote"); if (noteNode) { noteNode.hidden = true; noteNode.textContent = ""; }
       } catch (photoError) {
         profile.avatarData = V27.pendingAvatar;
         updateV27LocalAccount(profile);
-        var noteNode2 = byId("accountSaveNote"); if (noteNode2) { noteNode2.hidden = false; noteNode2.textContent = "عکس در همین مرورگر نگه‌داری شد؛ ارسال به تلگرام/ابر انجام نشد: " + String(photoError.message || photoError).slice(0,180); }
+        var noteNode2 = byId("accountSaveNote"); if (noteNode2) { noteNode2.hidden = true; noteNode2.textContent = ""; }
       }
     }
     updateV27ProfileUI(profile);
@@ -5536,12 +5559,13 @@ async function submitV27Account(event) {
     var message = existing ? "حساب قبلی بازیابی شد." : "حساب کاربری ساخته شد.";
     if (!cloud) message += " " + serverMessage;
     else if (serverMessage) message += " " + serverMessage;
-    accountStatus(message, "success");
-    toast(existing ? "حساب کاربری بازیابی شد." : "حساب کاربری آماده شد.");
+    if (premiumSignupNotice) message += premiumSignupNotice;
+    accountStatus("انجام شد", "success");
     V27.pendingAvatar = "";
-    setTimeout(function () { hideModal("accountBack"); }, 900);
+    setTimeout(function () { hideModal("accountBack"); if (premiumActivatedDuringSignup && window.shahedcodeV1ShowPremiumWelcome) window.shahedcodeV1ShowPremiumWelcome(); }, 900);
   } catch (error) {
-    accountStatus(String(error && error.message || error), "error");
+    accountStatus("", "");
+    if (typeof window.toast === "function") window.toast(String(error && error.message || error));
   } finally {
     submit.disabled = false; submit.textContent = "ورود / ثبت‌نام";
   }
@@ -5673,7 +5697,48 @@ if (document.readyState === "loading") {
 
 
 <style id="v29-account-page-layout">
-#accountBack.modal-back{position:fixed;inset:0;z-index:10050;display:flex;align-items:stretch;justify-content:center;padding:0!important;background:var(--bg,#070b18);backdrop-filter:none;overflow-y:auto}#accountBack[hidden]{display:none!important}#accountBack .account-modal{width:100%;max-width:760px;max-height:none;height:100%;min-height:100dvh;margin:0;border-radius:0;border:0;box-shadow:none;display:flex;flex-direction:column;background:var(--bg,#070b18)}#accountBack .modal-head{padding:calc(16px + env(safe-area-inset-top)) 20px 14px}#accountBack .account-body{flex:1;overflow-y:auto;padding:18px 20px 28px}#accountBack .account-foot{position:sticky;bottom:0;background:var(--panel,#0e1428);padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border,#25304b)}#accountBack .account-grid{grid-template-columns:1fr 1fr}#accountBack .account-avatar-row{margin-bottom:18px}#accountBack .captcha-panel-v29{display:grid;grid-template-columns:1fr;gap:10px;padding:12px;border:1px dashed var(--border-strong);border-radius:16px;background:var(--bg-soft)}#accountBack .captcha-art-wrap{display:flex;align-items:center;gap:10px}#accountBack #captchaCanvas{display:block;width:min(100%,260px);height:76px;border-radius:10px;border:1px solid var(--border);background:#f4f6fb}#accountBack .captcha-art-wrap .captcha-refresh{flex:0 0 44px}#accountBack .captcha-answer{width:100%;min-height:48px;letter-spacing:3px;text-transform:uppercase;font-weight:700;text-align:center;direction:ltr}#accountBack .account-consent,#accountBack .account-privacy{display:none!important}@media(max-width:480px){#accountBack .account-grid{grid-template-columns:1fr 1fr;gap:10px}#accountBack .account-body{padding:14px 16px 24px}}
+#accountBack.modal-back{position:fixed;inset:0;z-index:10050;display:flex;align-items:stretch;justify-content:center;padding:0!important;background:var(--bg,#070b18);backdrop-filter:none;overflow-y:auto}#accountBack[hidden]{display:none!important}#accountBack .account-modal{width:100%;max-width:760px;max-height:none;height:100%;min-height:100dvh;margin:0;border-radius:0;border:0;box-shadow:none;display:flex;flex-direction:column;background:var(--bg,#070b18)}#accountBack .modal-head{padding:calc(16px + env(safe-area-inset-top)) 20px 14px}#accountBack .account-body{flex:1;overflow-y:auto;padding:18px 20px 28px}#accountBack .account-foot{position:sticky;bottom:0;background:var(--panel,#0e1428);padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border,#25304b)}#accountBack .account-grid{grid-template-columns:1fr 1fr}#accountBack .account-avatar-row{margin-bottom:18px}#accountBack .captcha-panel-v29{display:grid;grid-template-columns:minmax(0,180px) minmax(110px,1fr);align-items:center;gap:8px;padding:8px;border:1px dashed var(--border-strong);border-radius:16px;background:var(--bg-soft)}#accountBack .captcha-art-wrap{display:flex;align-items:center;gap:10px}#accountBack #captchaCanvas{display:block;width:min(100%,180px);height:56px;border-radius:10px;border:1px solid var(--border);background:#f4f6fb}#accountBack .captcha-art-wrap .captcha-refresh{flex:0 0 34px;width:34px;height:34px}#accountBack .captcha-answer{width:100%;min-height:38px;letter-spacing:3px;text-transform:uppercase;font-weight:700;text-align:center;direction:ltr}#accountBack .account-consent,#accountBack .account-privacy{display:none!important}@media(max-width:480px){#accountBack .account-grid{grid-template-columns:1fr 1fr;gap:10px}#accountBack .account-body{padding:14px 16px 24px}}
 </style>
+
+
+<style id="shahedcode-v1-runtime-styles">
+:root[data-premium="yes"]{--accent:#e8b84c;--accent-2:#f7d778;--accent-3:#ffe39a;--accent-soft:rgba(232,184,76,.15);--border-strong:rgba(232,184,76,.55);--glow-1:rgba(232,184,76,.28)}
+.v1-home-panel{width:min(100%,680px);margin:10px auto 18px;padding:12px 14px;border:1px solid var(--border-strong);border-radius:15px;background:linear-gradient(120deg,var(--accent-soft),var(--panel));color:var(--text);text-align:right;box-shadow:0 8px 30px #0002}
+.v1-home-panel .v1-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.v1-home-panel input,.v1-home-panel select{min-width:0;max-width:100%;padding:9px;border:1px solid var(--border);border-radius:9px;background:var(--panel-2);color:var(--text)}
+.v1-daily-tip{margin-top:9px;padding:10px 12px;border-right:3px solid var(--accent);border-radius:9px;background:var(--bg-soft);white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;font-size:12px}
+.v1-downloads{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.v1-downloads button{border:1px solid var(--border-strong);border-radius:9px;padding:8px 11px;background:var(--accent-soft);color:var(--text);font:inherit;font-size:12px;cursor:pointer}
+.v1-premium-welcome{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 42%,#9c6a1640,#080910f5 68%);animation:v1FadeIn .35s ease-out both;overflow:hidden}.v1-premium-welcome[hidden]{display:none!important}.v1-premium-card{position:relative;width:min(100%,480px);padding:30px 22px;text-align:center;border:1px solid #f5d87c;border-radius:24px;background:linear-gradient(145deg,#201707f5,#100d0af7);box-shadow:0 0 35px #e8b84c55,inset 0 0 30px #e8b84c12;animation:v1GoldPop .65s cubic-bezier(.2,.8,.2,1) both}.v1-premium-crown{font-size:54px;filter:drop-shadow(0 0 14px #f7d778);animation:v1Crown 1.3s ease-in-out infinite alternate}.v1-premium-title{margin:10px 0;color:#ffe7a1;font-size:clamp(22px,5vw,32px);font-weight:900}.v1-premium-copy{color:#f7e9c3;line-height:1.9;font-size:14px}.v1-gold-spark{position:absolute;top:-20px;color:#ffdf77;font-size:18px;pointer-events:none;animation:v1Spark 2.3s linear infinite}.v1-gold-spark:nth-child(2){left:12%;animation-delay:.2s}.v1-gold-spark:nth-child(3){left:80%;animation-delay:.7s}.v1-gold-spark:nth-child(4){left:44%;animation-delay:1.1s}.v1-gold-spark:nth-child(5){left:65%;animation-delay:1.5s}
+@keyframes v1FadeIn{from{opacity:0}to{opacity:1}}@keyframes v1GoldPop{from{transform:translateY(20px) scale(.88);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}@keyframes v1Crown{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-6px) rotate(4deg)}}@keyframes v1Spark{0%{transform:translateY(-15vh) rotate(0);opacity:0}15%{opacity:1}100%{transform:translateY(110vh) rotate(280deg);opacity:0}}
+@media(max-width:480px){.v1-home-panel{padding:10px}.v1-home-panel .v1-row>*{max-width:100%}.v1-premium-card{padding:25px 16px}.v1-premium-title{font-size:24px}}
+</style>
+<div id="v1PremiumWelcome" class="v1-premium-welcome" hidden aria-live="polite"><span class="v1-gold-spark">✦</span><span class="v1-gold-spark">✧</span><span class="v1-gold-spark">✦</span><span class="v1-gold-spark">✧</span><section class="v1-premium-card"><div class="v1-premium-crown">♛</div><div class="v1-premium-title">به جمع پرمیوم‌ها خوش آمدی!</div><p class="v1-premium-copy">از این لحظه، تجربه‌ای طلایی با امکانات ویژهٔ شاهد کد در انتظارت است.<br>ساخت بازی نامحدود، انتخاب مدل هوش مصنوعی و دریافت فایل و ZIP.</p></section></div>
+<script id="shahedcode-v1-runtime">
+(function(){'use strict';
+var API=(window.CONFIG&&CONFIG.API_URL)||'https://shahed-ai.game-m-m-t-s0.workers.dev/';
+function profile(){try{return JSON.parse(localStorage.getItem('shahedcode_profile_v27')||'null')}catch(e){return null}}
+function saveProfile(p){try{localStorage.setItem('shahedcode_profile_v27',JSON.stringify(p));var map=JSON.parse(localStorage.getItem('shahedcode_accounts_v27')||'{}');if(map&&typeof map==='object'){var key=[p.firstName,p.lastName,p.username,p.phone].map(function(x){return String(x||'').trim().toLowerCase()}).join('|');map[key]=p;localStorage.setItem('shahedcode_accounts_v27',JSON.stringify(map));}}catch(e){}}
+function identity(p){return {firstName:p.firstName||'',lastName:p.lastName||'',username:p.username||'',phone:p.phone||''}}
+function premium(){var p=profile();return !!(p&&p.premium===true&&(!p.premiumExpiresAt||Date.now()<Number(p.premiumExpiresAt)))}
+function toastSafe(t){if(typeof window.toast==='function')window.toast(t);}
+function apiPost(path,body){return fetch(API.replace(/\/+$/,'')+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'}).then(function(r){return r.json().catch(function(){return {}}).then(function(d){if(!r.ok||!d.ok)throw Error((d.error&&d.error.message)||d.message||'درخواست ناموفق بود.');return d;});});}
+window.shahedcodeV1ShowPremiumWelcome=function(){var el=document.getElementById('v1PremiumWelcome');if(!el)return;el.hidden=false;window.setTimeout(function(){el.hidden=true;},4000);};
+function showBadge(){document.documentElement.dataset.premium=premium()?'yes':'no';var p=profile(),nodes=document.querySelectorAll('#sidebarProfileName,#accountWelcome');nodes.forEach(function(n){if(!n)return;var base=(n.textContent||'').replace(/\s*[⭐♛]?\s*پرمیوم\s*$/,'');if(premium()&&base.indexOf('پرمیوم')<0)n.textContent=base+' ⭐ پرمیوم';else if(!premium())n.textContent=base;});}
+function addHomePanel(){var welcome=document.getElementById('welcomeCard');if(!welcome||document.getElementById('v1HomePanel'))return;var panel=document.createElement('section');panel.id='v1HomePanel';panel.className='v1-home-panel';panel.innerHTML='<div class="v1-row"><strong>وضعیت حساب</strong><span id="v1PremiumStatus">نسخه رایگان · روزانه ۳ تست ساخت بازی</span><span style="flex:1"></span><button id="v1RedeemToggle" type="button" class="secondary-btn" style="padding:7px 10px">ورود کد پرمیوم</button></div><div id="v1RedeemRow" class="v1-row" hidden style="margin-top:9px"><input id="v1RedeemCode" maxlength="100" placeholder="کد پرمیوم" style="flex:1"><button id="v1RedeemBtn" type="button" class="primary-btn" style="padding:8px 12px">فعال‌سازی</button></div><div class="v1-row" style="margin-top:9px"><label for="v1ModelSelect" style="font-size:11px">مدل هوش مصنوعی</label><select id="v1ModelSelect" aria-label="مدل هوش مصنوعی"><option value="gpt-6-luna">GPT-6 Luna</option><option value="gpt-4o-mini">GPT-4o mini</option><option value="gapgpt-gemma-26b-a4b">Gemma 26B</option></select><span id="v1ModelNote" style="font-size:10px;color:var(--text-mute)">انتخاب مدل برای کاربران پرمیوم</span></div><div id="v1DailyTip" class="v1-daily-tip" hidden></div></section>';var en=welcome.querySelector('.welcome-en');welcome.insertBefore(panel,en||null);}
+function updateUI(){addHomePanel();showBadge();var pro=premium(),st=document.getElementById('v1PremiumStatus'),sel=document.getElementById('v1ModelSelect'),note=document.getElementById('v1ModelNote');if(st)st.textContent=pro?'⭐ حساب پرمیوم فعال است · ساخت بازی نامحدود · دریافت فایل و ZIP':'نسخه رایگان · روزانه ۳ تست ساخت بازی';if(sel){sel.disabled=!pro;var m='gpt-6-luna';try{m=localStorage.getItem('shahedcode_v1_model')||m}catch(e){}sel.value=pro?m:'gpt-6-luna';if(window.state)window.state.currentModel=sel.value;}if(note)note.textContent=pro?'مدل دلخواهت را انتخاب کن':'انتخاب مدل برای کاربران پرمیوم';}
+function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await apiPost('/premium/redeem',{identity:identity(p),code:code});p.premium=!!d.premium;p.premiumActivatedAt=d.activatedAt||new Date().toISOString();p.premiumExpiresAt=d.expiresAt||null;saveProfile(p);updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
+var sel=document.getElementById('v1ModelSelect');if(sel&&!sel.dataset.bound){sel.dataset.bound='1';sel.onchange=function(){if(!premium()){this.value='gpt-6-luna';toastSafe('انتخاب مدل فقط برای کاربران پرمیوم فعال است.');return;}try{localStorage.setItem('shahedcode_v1_model',this.value)}catch(e){}if(window.state)window.state.currentModel=this.value;toastSafe('مدل هوش مصنوعی تغییر کرد.');};}}
+function u16(n){return [n&255,(n>>>8)&255]}function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}function join(arr){var len=arr.reduce(function(a,b){return a+b.length},0),o=new Uint8Array(len),at=0;arr.forEach(function(x){o.set(x,at);at+=x.length});return o}function crc32(b){var c=-1;for(var i=0;i<b.length;i++){c^=b[i];for(var j=0;j<8;j++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return(c^-1)>>>0}function bytes(s){return new TextEncoder().encode(s)}
+function makeZip(files){var local=[],central=[],offset=0;files.forEach(function(f){var n=bytes(f.name),d=f.data,crc=crc32(d);var l=join([new Uint8Array(u32(0x04034b50)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),n,d]);local.push(l);central.push(join([new Uint8Array(u32(0x02014b50)),new Uint8Array(u16(20)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(0)),new Uint8Array(u32(offset)),n]));offset+=l.length;});var cd=join(central),end=join([new Uint8Array(u32(0x06054b50)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),new Uint8Array(u32(cd.length)),new Uint8Array(u32(offset)),new Uint8Array(u16(0))]);return new Blob([join(local),cd,end],{type:'application/zip'});}
+function saveBlob(blob,name){var a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},20000)}
+function extractFiles(text){var re=/```([a-zA-Z0-9_+.-]*)\s*\n([\s\S]*?)```/g,m,files=[],idx=0;while((m=re.exec(text))&&files.length<12){var lang=(m[1]||'txt').toLowerCase(),ext=({html:'html',htm:'html',css:'css',javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',json:'json',xml:'xml',markdown:'md',md:'md',bash:'sh',sh:'sh',sql:'sql',txt:'txt',yaml:'yml',yml:'yml'})[lang]||'txt';idx++;var name=(ext==='html'&&idx===1?'index.html':'file-'+idx+'.'+ext);files.push({name:name,data:bytes(m[2])});}return files;}
+function addFileDownloads(){if(!premium())return;document.querySelectorAll('.msg.bot').forEach(function(msg){if(msg.querySelector('.v1-downloads'))return;var bubble=msg.querySelector('.msg-bubble');if(!bubble)return;var files=extractFiles(bubble.innerText||'');if(!files.length)return;var row=document.createElement('div');row.className='v1-downloads';files.forEach(function(f){var b=document.createElement('button');b.type='button';b.textContent='⬇ '+f.name;b.onclick=function(){saveBlob(new Blob([f.data],{type:'application/octet-stream'}),f.name)};row.appendChild(b)});if(files.length>1){var z=document.createElement('button');z.type='button';z.textContent='📦 دریافت همه در ZIP';z.onclick=function(){saveBlob(makeZip(files),'shahedcode-files-v1.zip')};row.appendChild(z)}bubble.appendChild(row);});}
+function loadTip(){fetch(API.replace(/\/+$/,'')+'/daily-tip',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){var n=document.getElementById('v1DailyTip');if(n&&d&&d.text){n.textContent=d.text;n.hidden=false;}else if(n)n.hidden=true;}).catch(function(){});}
+function maybeNotify(){if(document.hidden&&'Notification'in window&&Notification.permission==='granted'){try{new Notification('شاهد کد',{body:'پاسخ هوش مصنوعی آماده شد.'})}catch(e){}}}
+function boot(){addHomePanel();bind();updateUI();loadTip();var stream=document.getElementById('chatStream')||document.body;new MutationObserver(function(){addFileDownloads();}).observe(stream,{childList:true,subtree:true});addFileDownloads();var send=document.getElementById('sendBtn');if(send&&!send.dataset.v1NotifyBound){send.dataset.v1NotifyBound='1';send.addEventListener('click',function(){if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission().catch(function(){});}});}document.addEventListener('visibilitychange',function(){if(!document.hidden)updateUI();});setInterval(function(){updateUI();},10000);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else setTimeout(boot,0);
+// Best-effort completion notice when the page is backgrounded. A normal browser page cannot keep running after it is fully closed.
+var originalSendToAPI=window.sendToAPI;if(typeof originalSendToAPI==='function'&&!originalSendToAPI.__v1Wrapped){var wrapped=async function(){var result=await originalSendToAPI.apply(this,arguments);maybeNotify();return result;};wrapped.__v1Wrapped=true;window.sendToAPI=wrapped;}
+})();
+</script>
 </body>
 </html>
