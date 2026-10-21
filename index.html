@@ -10,7 +10,7 @@
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/mmt315/Shahedcode/main/icon.png">
 <meta name="description" content="شاهد کد؛ دستیار هوشمند برنامه‌نویسی شاهدوب برای آموزش و ساخت پروژه‌های وب.">
 <meta name="color-scheme" content="dark light">
-<title>شاهد کد | Shahedcode</title>
+<title>شاهد کد v27 | Shahedcode</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Lalezar&display=swap" rel="stylesheet">
@@ -5532,16 +5532,20 @@ async function submitV27Account(event) {
       accountStatus("", "");
       try {
         var premiumResponse = await v27Api("/premium/redeem", { identity: identity, code: premiumSignupCode }, 12000);
-        if (premiumResponse && premiumResponse.ok && premiumResponse.premium) {
+        if (premiumResponse && premiumResponse.ok === true && premiumResponse.premium === true) {
           profile.premium = true;
           profile.premiumActivatedAt = premiumResponse.activatedAt || new Date().toISOString();
           profile.premiumExpiresAt = premiumResponse.expiresAt || null;
           updateV27LocalAccount(profile);
+          document.documentElement.dataset.premium = "yes";
+          if (typeof window.shahedcodeV1UpdateUI === "function") window.shahedcodeV1UpdateUI();
           premiumActivatedDuringSignup = true;
           premiumSignupNotice = " عضویت پرمیوم هم فعال شد.";
+        } else {
+          throw new Error("کد پرمیوم معتبر نیست یا ظرفیت استفاده از آن تمام شده است.");
         }
       } catch (premiumError) {
-        throw new Error("کد پرمیوم معتبر نیست یا ظرفیت استفاده از آن تمام شده است. حساب ذخیره شد؛ کد را بررسی کن و دوباره تلاش کن.");
+        throw new Error("کد پرمیوم معتبر نیست یا ظرفیت استفاده از آن تمام شده است. کد را بررسی کن و دوباره تلاش کن.");
       }
     } else if (premiumSignupCode && !cloud) {
       premiumSignupNotice = " برای فعال‌سازی کد پرمیوم باید اتصال حساب ابری برقرار باشد.";
@@ -5736,7 +5740,8 @@ window.shahedcodeV1ShowPremiumWelcome=function(){var el=document.getElementById(
 function showBadge(){document.documentElement.dataset.premium=premium()?'yes':'no';var p=profile(),nodes=document.querySelectorAll('#sidebarProfileName,#accountWelcome');nodes.forEach(function(n){if(!n)return;var base=(n.textContent||'').replace(/\s*[⭐♛]?\s*پرمیوم\s*$/,'');if(premium()&&base.indexOf('پرمیوم')<0)n.textContent=base+' ⭐ پرمیوم';else if(!premium())n.textContent=base;});}
 function addHomePanel(){}
 function updateUI(){showBadge();var pro=premium(),st=document.getElementById('v1PremiumStatus'),ast=document.getElementById('v1AccountPremiumStatus'),note=document.getElementById('v1ModelNote'),m='gpt-6-luna';try{m=localStorage.getItem('shahedcode_v1_model')||m}catch(e){}if(st)st.textContent=pro?'⭐ حساب پرمیوم فعال است · ساخت بازی نامحدود · دریافت فایل و ZIP':'نسخهٔ رایگان · روزانه ۳ تست ساخت بازی';if(ast)ast.textContent=pro?'⭐ حساب پرمیوم فعال است':'حساب رایگان · روزانه ۳ تست ساخت بازی';['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(!sel)return;sel.disabled=!pro;sel.value=pro?m:'gpt-6-luna';});['v1ProfileModelNote','v1AccountModelNote'].forEach(function(id){var n=document.getElementById(id);if(n)n.textContent=pro?'مدل دلخواهت را انتخاب کن':'تغییر مدل فقط برای کاربران پرمیوم فعال است.';});if(window.state)window.state.currentModel=pro?m:'gpt-6-luna';}
-function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await apiPost('/premium/redeem',{identity:identity(p),code:code});p.premium=!!d.premium;p.premiumActivatedAt=d.activatedAt||new Date().toISOString();p.premiumExpiresAt=d.expiresAt||null;saveProfile(p);updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
+window.shahedcodeV1UpdateUI=updateUI;
+function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await apiPost('/premium/redeem',{identity:identity(p),code:code});if(d.premium!==true)throw Error(d.message||'کد تأیید نشد؛ حساب همچنان رایگان است.');p.premium=true;p.premiumActivatedAt=d.activatedAt||new Date().toISOString();p.premiumExpiresAt=d.expiresAt||null;saveProfile(p);document.documentElement.dataset.premium='yes';updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
 ['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(sel&&!sel.dataset.bound){sel.dataset.bound='1';sel.onchange=function(){if(!premium()){this.value='gpt-6-luna';toastSafe('تغییر مدل فقط برای کاربران پرمیوم فعال است.');updateUI();return;}try{localStorage.setItem('shahedcode_v1_model',this.value)}catch(e){}if(window.state)window.state.currentModel=this.value;['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(otherId){var other=document.getElementById(otherId);if(other)other.value=sel.value;});toastSafe('مدل هوش مصنوعی تغییر کرد.');};}}); }
 function u16(n){return [n&255,(n>>>8)&255]}function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}function join(arr){var len=arr.reduce(function(a,b){return a+b.length},0),o=new Uint8Array(len),at=0;arr.forEach(function(x){o.set(x,at);at+=x.length});return o}function crc32(b){var c=-1;for(var i=0;i<b.length;i++){c^=b[i];for(var j=0;j<8;j++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return(c^-1)>>>0}function bytes(s){return new TextEncoder().encode(s)}
 function makeZip(files){var local=[],central=[],offset=0;files.forEach(function(f){var n=bytes(f.name),d=f.data,crc=crc32(d);var l=join([new Uint8Array(u32(0x04034b50)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),n,d]);local.push(l);central.push(join([new Uint8Array(u32(0x02014b50)),new Uint8Array(u16(20)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(0)),new Uint8Array(u32(offset)),n]));offset+=l.length;});var cd=join(central),end=join([new Uint8Array(u32(0x06054b50)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),new Uint8Array(u32(cd.length)),new Uint8Array(u32(offset)),new Uint8Array(u16(0))]);return new Blob([join(local),cd,end],{type:'application/zip'});}
@@ -5768,3 +5773,20 @@ var originalSendToAPI=window.sendToAPI;if(typeof originalSendToAPI==='function'&
 </script>
 </body>
 </html>
+
+<style id="v1-final-usability-fixes">
+/* Keep the account/profile dialog anchored to the top and scroll its content, so the form never hides below the viewport. */
+#accountBack.modal-back{align-items:flex-start!important;overflow-y:auto!important;overscroll-behavior:contain}
+#accountBack .account-modal{height:auto!important;min-height:100dvh!important;max-height:none!important;overflow:visible!important}
+#accountBack .account-body{flex:1 0 auto!important;min-height:0!important;overflow:visible!important;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px))!important}
+#accountBack .account-foot{position:sticky!important;bottom:0!important;z-index:3!important;flex-shrink:0!important}
+#captchaRefresh{display:inline-flex!important;align-items:center!important;justify-content:center!important;background:linear-gradient(145deg,#ffd65a,#f59e0b)!important;color:#17100a!important;border:2px solid #fff0a6!important;box-shadow:0 0 0 2px #b77908,0 4px 14px #f59e0b66!important;font-weight:900!important;font-size:27px!important;line-height:1!important;opacity:1!important}
+#captchaRefresh:focus-visible{outline:3px solid #fff!important;outline-offset:3px!important}
+#captchaRefresh:active{transform:rotate(45deg) scale(.94)!important}
+.v1-premium-welcome{z-index:30000!important}
+.v1-premium-card{border:2px solid #ffe7a1!important;box-shadow:0 0 0 1px #b77908,0 0 55px #f7d77888,inset 0 0 35px #f7d77820!important}
+.v1-premium-welcome::before{content:"";position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent 0 70%,#ffe7a177 78%,transparent 86%);animation:v1GoldOrbit 3.2s linear infinite;pointer-events:none}
+.v1-premium-card{z-index:1}
+@keyframes v1GoldOrbit{to{transform:rotate(360deg)}}
+@media(max-width:480px){#accountBack .modal-head{padding-inline:15px!important}#accountBack .account-body{padding-inline:14px!important}#accountBack .account-foot{padding-inline:14px!important}}
+</style>
