@@ -10,7 +10,7 @@
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/mmt315/Shahedcode/main/icon.png">
 <meta name="description" content="شاهد کد؛ دستیار هوشمند برنامه‌نویسی شاهدوب برای آموزش و ساخت پروژه‌های وب.">
 <meta name="color-scheme" content="dark light">
-<title>شاهد کد v27 | Shahedcode</title>
+<title>شاهد کد | Shahedcode</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Lalezar&display=swap" rel="stylesheet">
@@ -2482,10 +2482,14 @@ html[data-theme="custom"] .dropdown-item[aria-checked="true"]{background:var(--a
     </div>
     <div class="modal-body">
       <p class="profile-desc">شاهد کد یک دستیار هوشمند برای یادگیری برنامه‌نویسی، بررسی کد، اجرای نمونه‌ها و ساخت بازی‌های تحت وب است. می‌توانی از آن برای یادگیری مرحله‌به‌مرحله و توسعه پروژه‌های خودت کمک بگیری.</p>
-      <div class="telemetry-notice" role="note" style="margin:14px 0;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--surface-soft,rgba(127,127,127,.06));font-size:12px;line-height:1.9">
-        <strong>اطلاعیهٔ حریم خصوصی:</strong> برای امنیت و بررسی سوءاستفاده، متن پیام‌های ارسالی، پاسخ‌های هوش مصنوعی و درخواست‌های ساخت بازی ممکن است به‌طور کامل ثبت و توسط مدیر بررسی شود. لطفاً اطلاعات حساس مانند رمز عبور، کدهای ورود و اطلاعات بانکی را وارد نکن.
-      </div>
-      <div class="feature-grid">
+      <section class="v1-profile-model-box" style="margin:14px 0;padding:14px;border:1px solid var(--border);border-radius:16px;background:var(--surface-soft,rgba(127,127,127,.06))">
+        <label for="v1ProfileModelSelect" style="display:block;font-weight:800;margin-bottom:8px">مدل هوش مصنوعی</label>
+        <select id="v1ProfileModelSelect" aria-label="تغییر مدل هوش مصنوعی" style="width:100%;min-height:42px" disabled>
+          <option value="gpt-6-luna">GPT-6 Luna</option><option value="gpt-4o-mini">GPT-4o mini</option><option value="gapgpt-gemma-26b-a4b">Gemma 26B</option>
+        </select>
+        <small id="v1ProfileModelNote" style="display:block;margin-top:7px;color:var(--text-mute)">تغییر مدل فقط برای کاربران پرمیوم فعال است.</small>
+      </section>
+     <div class="feature-grid">
         <div class="feature-item"><svg><use href="#i-code"/></svg>آموزش کدنویسی</div>
         <div class="feature-item"><svg><use href="#i-terminal"/></svg>اجرای زنده کد</div>
         <div class="feature-item"><svg><use href="#i-game"/></svg>ساخت بازی</div>
@@ -2521,6 +2525,11 @@ html[data-theme="custom"] .dropdown-item[aria-checked="true"]{background:var(--a
           <label class="account-field"><span>نام خانوادگی</span><input id="accountLastName" name="lastName" type="text" maxlength="70" autocomplete="family-name" required placeholder="نام خانوادگی"></label>
           <label class="account-field"><span>نام کاربری</span><input id="accountUsername" name="username" type="text" maxlength="32" autocomplete="username" autocapitalize="none" required placeholder="مثلاً shahed_user"></label>
           <label class="account-field"><span>شماره موبایل</span><input id="accountPhone" name="phone" type="tel" maxlength="24" inputmode="tel" autocomplete="tel" pattern="(09[0-9]{9}|\+?98[0-9]{10}|0098[0-9]{10})" required placeholder="09123456789"></label>
+        </div>
+        <div class="account-field" style="padding:12px;border:1px solid var(--border);border-radius:14px">
+          <label for="v1AccountModelSelect" style="display:block;margin-bottom:7px;font-weight:800">مدل هوش مصنوعی</label>
+          <select id="v1AccountModelSelect" aria-label="تغییر مدل هوش مصنوعی در پروفایل" style="width:100%;min-height:42px" disabled><option value="gpt-6-luna">GPT-6 Luna</option><option value="gpt-4o-mini">GPT-4o mini</option><option value="gapgpt-gemma-26b-a4b">Gemma 26B</option></select>
+          <small id="v1AccountModelNote" style="display:block;margin-top:7px;color:var(--text-mute)">تغییر مدل فقط برای کاربران پرمیوم فعال است.</small>
         </div>
         <label class="account-field" id="signupPremiumCodeWrap"><span>کد پرمیوم (اختیاری)</span><input id="premiumCodeSignup" name="premiumCode" type="text" maxlength="100" autocomplete="off" autocapitalize="characters" placeholder="اگر کد داری وارد کن"></label>
         <div class="captcha-panel captcha-panel-v29">
@@ -5724,9 +5733,9 @@ function apiPost(path,body){return fetch(API.replace(/\/+$/,'')+path,{method:'PO
 window.shahedcodeV1ShowPremiumWelcome=function(){var el=document.getElementById('v1PremiumWelcome');if(!el)return;el.hidden=false;window.setTimeout(function(){el.hidden=true;},4000);};
 function showBadge(){document.documentElement.dataset.premium=premium()?'yes':'no';var p=profile(),nodes=document.querySelectorAll('#sidebarProfileName,#accountWelcome');nodes.forEach(function(n){if(!n)return;var base=(n.textContent||'').replace(/\s*[⭐♛]?\s*پرمیوم\s*$/,'');if(premium()&&base.indexOf('پرمیوم')<0)n.textContent=base+' ⭐ پرمیوم';else if(!premium())n.textContent=base;});}
 function addHomePanel(){var welcome=document.getElementById('welcomeCard');if(!welcome||document.getElementById('v1HomePanel'))return;var panel=document.createElement('section');panel.id='v1HomePanel';panel.className='v1-home-panel';panel.innerHTML='<div class="v1-row"><strong>وضعیت حساب</strong><span id="v1PremiumStatus">نسخه رایگان · روزانه ۳ تست ساخت بازی</span><span style="flex:1"></span><button id="v1RedeemToggle" type="button" class="secondary-btn" style="padding:7px 10px">ورود کد پرمیوم</button></div><div id="v1RedeemRow" class="v1-row" hidden style="margin-top:9px"><input id="v1RedeemCode" maxlength="100" placeholder="کد پرمیوم" style="flex:1"><button id="v1RedeemBtn" type="button" class="primary-btn" style="padding:8px 12px">فعال‌سازی</button></div><div class="v1-row" style="margin-top:9px"><label for="v1ModelSelect" style="font-size:11px">مدل هوش مصنوعی</label><select id="v1ModelSelect" aria-label="مدل هوش مصنوعی"><option value="gpt-6-luna">GPT-6 Luna</option><option value="gpt-4o-mini">GPT-4o mini</option><option value="gapgpt-gemma-26b-a4b">Gemma 26B</option></select><span id="v1ModelNote" style="font-size:10px;color:var(--text-mute)">انتخاب مدل برای کاربران پرمیوم</span></div><div id="v1DailyTip" class="v1-daily-tip" hidden></div></section>';var en=welcome.querySelector('.welcome-en');welcome.insertBefore(panel,en||null);}
-function updateUI(){addHomePanel();showBadge();var pro=premium(),st=document.getElementById('v1PremiumStatus'),sel=document.getElementById('v1ModelSelect'),note=document.getElementById('v1ModelNote');if(st)st.textContent=pro?'⭐ حساب پرمیوم فعال است · ساخت بازی نامحدود · دریافت فایل و ZIP':'نسخه رایگان · روزانه ۳ تست ساخت بازی';if(sel){sel.disabled=!pro;var m='gpt-6-luna';try{m=localStorage.getItem('shahedcode_v1_model')||m}catch(e){}sel.value=pro?m:'gpt-6-luna';if(window.state)window.state.currentModel=sel.value;}if(note)note.textContent=pro?'مدل دلخواهت را انتخاب کن':'انتخاب مدل برای کاربران پرمیوم';}
+function updateUI(){addHomePanel();showBadge();var pro=premium(),st=document.getElementById('v1PremiumStatus'),note=document.getElementById('v1ModelNote'),m='gpt-6-luna';try{m=localStorage.getItem('shahedcode_v1_model')||m}catch(e){}if(st)st.textContent=pro?'⭐ حساب پرمیوم فعال است · ساخت بازی نامحدود · دریافت فایل و ZIP':'نسخه رایگان · روزانه ۳ تست ساخت بازی';['v1ModelSelect','v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(!sel)return;sel.disabled=!pro;sel.value=pro?m:'gpt-6-luna';});['v1ModelNote','v1ProfileModelNote','v1AccountModelNote'].forEach(function(id){var n=document.getElementById(id);if(n)n.textContent=pro?'مدل دلخواهت را انتخاب کن':'تغییر مدل فقط برای کاربران پرمیوم فعال است.';});if(window.state)window.state.currentModel=pro?m:'gpt-6-luna';}
 function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await apiPost('/premium/redeem',{identity:identity(p),code:code});p.premium=!!d.premium;p.premiumActivatedAt=d.activatedAt||new Date().toISOString();p.premiumExpiresAt=d.expiresAt||null;saveProfile(p);updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
-var sel=document.getElementById('v1ModelSelect');if(sel&&!sel.dataset.bound){sel.dataset.bound='1';sel.onchange=function(){if(!premium()){this.value='gpt-6-luna';toastSafe('انتخاب مدل فقط برای کاربران پرمیوم فعال است.');return;}try{localStorage.setItem('shahedcode_v1_model',this.value)}catch(e){}if(window.state)window.state.currentModel=this.value;toastSafe('مدل هوش مصنوعی تغییر کرد.');};}}
+['v1ModelSelect','v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(sel&&!sel.dataset.bound){sel.dataset.bound='1';sel.onchange=function(){if(!premium()){this.value='gpt-6-luna';toastSafe('تغییر مدل فقط برای کاربران پرمیوم فعال است.');updateUI();return;}try{localStorage.setItem('shahedcode_v1_model',this.value)}catch(e){}if(window.state)window.state.currentModel=this.value;['v1ModelSelect','v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(otherId){var other=document.getElementById(otherId);if(other)other.value=sel.value;});toastSafe('مدل هوش مصنوعی تغییر کرد.');};}}); }
 function u16(n){return [n&255,(n>>>8)&255]}function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}function join(arr){var len=arr.reduce(function(a,b){return a+b.length},0),o=new Uint8Array(len),at=0;arr.forEach(function(x){o.set(x,at);at+=x.length});return o}function crc32(b){var c=-1;for(var i=0;i<b.length;i++){c^=b[i];for(var j=0;j<8;j++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return(c^-1)>>>0}function bytes(s){return new TextEncoder().encode(s)}
 function makeZip(files){var local=[],central=[],offset=0;files.forEach(function(f){var n=bytes(f.name),d=f.data,crc=crc32(d);var l=join([new Uint8Array(u32(0x04034b50)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),n,d]);local.push(l);central.push(join([new Uint8Array(u32(0x02014b50)),new Uint8Array(u16(20)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(0)),new Uint8Array(u32(offset)),n]));offset+=l.length;});var cd=join(central),end=join([new Uint8Array(u32(0x06054b50)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),new Uint8Array(u32(cd.length)),new Uint8Array(u32(offset)),new Uint8Array(u16(0))]);return new Blob([join(local),cd,end],{type:'application/zip'});}
 function saveBlob(blob,name){var a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},20000)}
@@ -5738,6 +5747,21 @@ function boot(){addHomePanel();bind();updateUI();loadTip();var stream=document.g
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else setTimeout(boot,0);
 // Best-effort completion notice when the page is backgrounded. A normal browser page cannot keep running after it is fully closed.
 var originalSendToAPI=window.sendToAPI;if(typeof originalSendToAPI==='function'&&!originalSendToAPI.__v1Wrapped){var wrapped=async function(){var result=await originalSendToAPI.apply(this,arguments);maybeNotify();return result;};wrapped.__v1Wrapped=true;window.sendToAPI=wrapped;}
+})();
+</script>
+<script id="shahed-mobile-back-guard">
+(function(){
+  if(!history||!history.pushState)return;
+  var guardKey='__shahedcodeBackGuardV1';
+  function arm(){try{history.pushState({[guardKey]:true},'',location.href)}catch(e){}}
+  function anyModal(){return Array.prototype.some.call(document.querySelectorAll('.modal-back'),function(el){return !el.hidden})}
+  arm();
+  window.addEventListener('popstate',function(){
+    if(anyModal()){if(typeof window.closeTopLayer==='function')window.closeTopLayer();else{var opened=document.querySelector('.modal-back:not([hidden])');if(opened)opened.hidden=true;}}
+    else if(document.getElementById('sidebar')&&document.getElementById('sidebar').classList.contains('open')){if(typeof window.closeSidebar==='function')window.closeSidebar();else{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').hidden=true;}}
+    else if(typeof window.closeDropdowns==='function')window.closeDropdowns();
+    arm();
+  });
 })();
 </script>
 </body>
