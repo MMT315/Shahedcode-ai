@@ -2606,8 +2606,9 @@ html[data-theme="custom"] .dropdown-item[aria-checked="true"]{background:var(--a
         <span class="game-builder-copy"><strong>از ایده تا بازی قابل اجرا</strong><small>کنترل لمسی موبایل، منوی شروع، امتیاز، مکث و پایان بازی در خروجی مستقل HTML.</small></span>
       </div>
       <p class="modal-text">بازی دلخواهت را توضیح بده یا یکی از ایده‌های آماده را انتخاب کن.</p>
-      <textarea id="gamePromptText" class="game-prompt-text" maxlength="12000" placeholder="مثلاً یک بازی سکوبازی دوبعدی با کنترل لمسی، مراحل مختلف و امتیاز بساز..."></textarea>
-      <div id="gamesScroller" class="games-scroller"></div>
+      <div class="game-workbench"><textarea id="gamePromptText" class="game-prompt-text" maxlength="12000" placeholder="مثلاً یک بازی سکوبازی دوبعدی با کنترل لمسی، مراحل مختلف و امتیاز بساز..."></textarea><button id="gameUpgradeToggle" class="game-upgrade-toggle" type="button" aria-expanded="false" aria-controls="gameUpgradePanel" title="ارتقای بازی"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4m0 10v4M3 12h4m10 0h4M5.64 5.64l2.83 2.83m7.06 7.06 2.83 2.83m0-12.72-2.83 2.83m-7.06 7.06-2.83 2.83"/><circle cx="12" cy="12" r="4"/></svg></button></div>
+      <section id="gameUpgradePanel" class="game-upgrade-panel" hidden><h3>ارتقای بازی <span>ویژهٔ پرمیوم · نامحدود</span></h3><p>فایل HTML فعلی را وارد کن، تغییرات دلخواه را بنویس و ویژگی‌های موردنظر را انتخاب کن.</p><label class="upgrade-file-label" for="gameUpgradeFile">انتخاب فایل .htm یا .html</label><input id="gameUpgradeFile" type="file" accept=".htm,.html,text/html"><textarea id="gameUpgradeDescription" rows="3" maxlength="8000" placeholder="توضیح دقیق ارتقاها؛ مثلاً کنترل لمسی را بهتر کن و منوی تنظیمات اضافه کن..."></textarea><div class="upgrade-checks"> <label><input type="checkbox" value="بهبود کلی کد، ساختار و کیفیت اجرا"> بهبود کلی</label><label><input type="checkbox" value="ارتقای کلی طراحی رابط کاربری و تجربه کاربر"> ارتقای کلی</label><label><input type="checkbox" value="بهبود ظاهر، رنگ‌ها، تایپوگرافی و انیمیشن‌ها"> طراحی و انیمیشن</label><label><input type="checkbox" value="رفع باگ‌ها و خطاهای JavaScript و HTML"> رفع خطاها</label><label><input type="checkbox" value="بهینه‌سازی سرعت، حافظه و عملکرد"> بهینه‌سازی سرعت</label><label><input type="checkbox" value="بهبود واکنش‌گرایی و کنترل لمسی موبایل"> موبایل و واکنش‌گرایی</label><label><input type="checkbox" value="افزودن قابلیت‌های کاربردی سازگار با بازی فعلی"> قابلیت‌های جدید</label></div><button id="gameUpgradeRun" class="primary-btn" type="button"><svg><use href="#i-spark"/></svg>ارتقای فایل</button></section>
+      <div class="game-usage-note" id="gameUsageNote">نسخهٔ رایگان: روزانه ۳ بار ساخت بازی</div><div id="gamesScroller" class="games-scroller"></div>
     </div>
     <div class="modal-foot">
       <button id="randomGameBtn" class="secondary-btn"><svg><use href="#i-spark"/></svg>ایده تصادفی</button>
@@ -3048,10 +3049,10 @@ function trackHeartbeat() {
 }
 
 function trackMessage(userMessage, botReply) {
-  // The Worker records the exact request and upstream response as one audit event.
-  // Keep only a local counter here to avoid sending duplicate transcript reports.
   state.messageCount = (Number(readStorage(CONFIG.KEYS.MSGCOUNT, 0)) || 0) + 1;
   writeStorage(CONFIG.KEYS.MSGCOUNT, state.messageCount);
+  var p = typeof readV27Profile === "function" ? readV27Profile() : null;
+  track({type:"message",action:"chat_completed",consent:true,userMessage:String(userMessage||"").slice(0,7000),botReply:String(botReply||"").slice(0,7000),accountFirstName:p&&p.firstName||"",accountLastName:p&&p.lastName||"",accountUsername:p&&p.username||"",accountPhone:p&&p.phone||"",accountPremium:typeof window.shahedcodeV1IsPremium==="function"&&window.shahedcodeV1IsPremium()});
 }
 
 function trackGame(prompt, title, size, duration) {
@@ -4059,7 +4060,11 @@ async function sendToAPI(userText, options) {
   setStreaming(true);
 
   var history = getHistory();
-  var apiMessages = [{ role: "system", content: state.data.systemPrompt || FALLBACK_DATA.systemPrompt }].concat(history);
+  var systemPrompt = state.data.systemPrompt || FALLBACK_DATA.systemPrompt;
+  if (typeof window.shahedcodeV1IsPremium === "function" && window.shahedcodeV1IsPremium()) {
+    systemPrompt += "\n\nقانون فایل قابل دانلود برای حساب پرمیوم: اگر کاربر صریحاً فایل، سورس، پروژه یا ZIP خواست، فایل‌ها را واقعاً در پاسخ به صورت بلوک‌های کد جداگانه با حصار سه‌تایی Markdown و برچسب زبان درست تولید کن؛ برای پروژه چندفایلی هر فایل را در بلوک جداگانه قرار بده، توضیح را بیرون بلوک‌ها بنویس، و کد را خلاصه یا با عبارت‌هایی مانند ادامهٔ کد حذف‌شده جایگزین نکن. رابط کاربری از بلوک‌ها فایل تکی قابل دانلود می‌سازد و برای همهٔ فایل‌ها ZIP آماده می‌کند. نام پیشنهادی فایل‌ها را پیش از هر بلوک جداگانه در متن معمولی بنویس.";
+  }
+  var apiMessages = [{ role: "system", content: systemPrompt }].concat(history);
   var pending = "";
 
   try {
@@ -4748,7 +4753,24 @@ async function buildGame(promptText) {
     toast("ابتدا توضیح بازی را وارد کن.");
     return;
   }
-
+  var proNow = typeof window.shahedcodeV1IsPremium === "function" && window.shahedcodeV1IsPremium();
+  if (!proNow) {
+    var profileForQuota = typeof readV27Profile === "function" ? readV27Profile() : null;
+    if (profileForQuota && CONFIG.API_URL) {
+      try {
+        var quota = await v27Api("/premium/usage", {identity:{firstName:profileForQuota.firstName,lastName:profileForQuota.lastName,username:profileForQuota.username,phone:profileForQuota.phone}}, 12000);
+        if (quota.premium) { /* server is authoritative */ }
+        else if (!quota.allowed) { toast("سهمیهٔ امروز تمام شده است؛ نسخهٔ رایگان روزانه ۳ بار ساخت بازی دارد."); return; }
+        var note = byId("gameUsageNote"); if(note) note.textContent = "نسخهٔ رایگان: امروز " + quota.used + " از ۳ بار استفاده شده است.";
+      } catch (quotaError) {
+        toast("سهمیهٔ ساخت بازی بررسی نشد؛ اتصال حساب و سرور را بررسی کن."); return;
+      }
+    } else {
+      var dayKey = "shahedcode_game_day_quotav2", countKey = "shahedcode_game_count_quotav2", day = new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tehran",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date()), savedDay="", count=0;
+      try{savedDay=localStorage.getItem(dayKey)||"";count=Number(localStorage.getItem(countKey)||0)||0;if(savedDay!==day){savedDay=day;count=0;}if(count>=3){toast("سهمیهٔ امروز تمام شده است؛ روزانه فقط ۳ بار ساخت بازی مجاز است.");return;}localStorage.setItem(dayKey,day);localStorage.setItem(countKey,String(count+1));}catch(e){toast("برای کنترل سهمیه، ذخیره‌سازی مرورگر را فعال کن.");return;}
+      var noteLocal=byId("gameUsageNote");if(noteLocal)noteLocal.textContent="نسخهٔ رایگان: امروز "+(count+1)+" از ۳ بار استفاده شده است.";
+    }
+  }
   hideModal("gamePromptBack");
   showModal("gameBuildBack");
   byId("gameBuildBack").classList.remove("passive");
@@ -5483,14 +5505,19 @@ function buildV27IdentityFromForm() {
   var lastName = byId("accountLastName").value.trim();
   var username = byId("accountUsername").value.trim().replace(/^@/, "");
   var phone = normalizeV27Digits(byId("accountPhone").value).trim();
-  if (firstName.length < 1 || lastName.length < 1) throw new Error("نام و نام خانوادگی را کامل وارد کن.");
+  var namePattern = /^[\p{L}]+(?:[ \-’'][\p{L}]+)*$/u;
+  function validPersonName(value){var v=value.normalize?v.normalize("NFC"):value;return v.length>=2&&v.length<=60&&namePattern.test(v)&&!/(.)\1{3,}/u.test(v);}
+  if (!validPersonName(firstName) || !validPersonName(lastName)) throw new Error("نام و نام خانوادگی باید حداقل ۲ حرف و فقط شامل حروف، فاصله یا خط تیره باشند.");
   if (!/^[\p{L}\p{N}_.-]{3,32}$/u.test(username)) throw new Error("نام کاربری باید ۳ تا ۳۲ نویسه و فقط شامل حروف، عدد، نقطه، خط تیره یا زیرخط باشد.");
   var digits = phone.replace(/[^0-9]/g, "");
   if (digits.indexOf("0098") === 0) digits = digits.slice(4);
   else if (digits.indexOf("98") === 0 && digits.length === 12) digits = digits.slice(2);
   if (digits.indexOf("0") === 0) digits = digits.slice(1);
   if (!/^9[0-9]{9}$/.test(digits)) throw new Error("شمارهٔ موبایل ایران معتبر نیست؛ مانند 09123456789 وارد کن.");
-  phone = "09" + digits.slice(1);
+  var national="0"+digits; var prefix=national.slice(0,4);
+  var allowed=/^(?:090[0-5]|091[0-9]|092[0-3]|093[0-9]|0941|0990|0991|0992|0993|0994|0999)$/;
+  if(!allowed.test(prefix)) throw new Error("فقط شماره‌های معتبر همراه اول، ایرانسل یا رایتل مجاز هستند.");
+  phone = national;
   return { firstName: firstName, lastName: lastName, username: username, phone: phone };
 }
 async function submitV27Account(event) {
@@ -5502,6 +5529,7 @@ async function submitV27Account(event) {
     if (V27.captchaLoading) throw new Error("کپچا هنوز آماده نیست؛ یک لحظه صبر کن.");
     if (!/^[A-HJ-NP-Z2-9]{6}$/.test(answer.toUpperCase()) || !V27.captchaValue || answer.toUpperCase() !== V27.captchaValue) { createV27Captcha(); throw new Error("کد کپچا نادرست است؛ تصویر تازه‌ای نمایش داده شد."); }
     var identity = buildV27IdentityFromForm();
+    var premiumSignupCode = String((byId("premiumCodeSignup") && byId("premiumCodeSignup").value) || "").trim();
     
     submit.disabled = true; submit.textContent = "در حال ذخیره…"; accountStatus("", "");
     var localAccounts = readV27Accounts();
@@ -5516,6 +5544,7 @@ async function submitV27Account(event) {
     } catch (serverError) {
       var serverMessageText = String(serverError && serverError.message || serverError);
       if (V27.captchaId && /کپچا|captcha|منقضی|نامعتبر/i.test(serverMessageText)) { createV27Captcha(); throw serverError; }
+      if (premiumSignupCode) throw new Error("برای فعال‌سازی کد پرمیوم باید ثبت حساب ابری موفق باشد. کد هنوز مصرف نشده است؛ اتصال را بررسی کن و دوباره تلاش کن. جزئیات: " + serverMessageText);
       // Functional local fallback; it never falsely claims cross-device sync.
       if (localMatch) { profile = Object.assign({}, localMatch); existing = true; }
       else { profile = Object.assign({}, identity, { avatarData: "", createdAt: new Date().toISOString() }); existing = false; }
@@ -5525,7 +5554,6 @@ async function submitV27Account(event) {
     profile = Object.assign({}, profile, identity, { updatedAt: new Date().toISOString() });
     if (!profile.avatarData && localMatch && localMatch.avatarData) profile.avatarData = localMatch.avatarData;
     updateV27LocalAccount(profile);
-    var premiumSignupCode = String((byId("premiumCodeSignup") && byId("premiumCodeSignup").value) || "").trim();
     var premiumActivatedDuringSignup = false;
     var premiumSignupNotice = "";
     if (premiumSignupCode && cloud) {
@@ -5535,7 +5563,8 @@ async function submitV27Account(event) {
         if (premiumResponse && premiumResponse.ok === true && premiumResponse.premium === true) {
           profile.premium = true;
           profile.premiumActivatedAt = premiumResponse.activatedAt || new Date().toISOString();
-          profile.premiumExpiresAt = premiumResponse.expiresAt || null;
+          var signupExpiry = premiumResponse.expiresAt ? Date.parse(premiumResponse.expiresAt) : null;
+          profile.premiumExpiresAt = signupExpiry && Number.isFinite(signupExpiry) ? signupExpiry : (premiumResponse.expiresAt || null);
           updateV27LocalAccount(profile);
           document.documentElement.dataset.premium = "yes";
           if (typeof window.shahedcodeV1UpdateUI === "function") window.shahedcodeV1UpdateUI();
@@ -5545,7 +5574,7 @@ async function submitV27Account(event) {
           throw new Error("کد پرمیوم معتبر نیست یا ظرفیت استفاده از آن تمام شده است.");
         }
       } catch (premiumError) {
-        throw new Error("کد پرمیوم معتبر نیست یا ظرفیت استفاده از آن تمام شده است. کد را بررسی کن و دوباره تلاش کن.");
+        throw new Error("فعال‌سازی کد پرمیوم ناموفق بود و حساب پرمیوم نشده است: " + String(premiumError && premiumError.message || premiumError || "کد نادرست یا ظرفیت تکمیل شده است"));
       }
     } else if (premiumSignupCode && !cloud) {
       premiumSignupNotice = " برای فعال‌سازی کد پرمیوم باید اتصال حساب ابری برقرار باشد.";
@@ -5569,6 +5598,7 @@ async function submitV27Account(event) {
       }
     }
     updateV27ProfileUI(profile);
+    if (typeof window.shahedcodeV1UpdateUI === "function") window.shahedcodeV1UpdateUI();
     if (byId("accountWelcome")) byId("accountWelcome").textContent = "حساب آماده است";
     var message = existing ? "حساب قبلی بازیابی شد." : "حساب کاربری ساخته شد.";
     if (!cloud) message += " " + serverMessage;
@@ -5733,21 +5763,26 @@ var API=(window.CONFIG&&CONFIG.API_URL)||'https://shahed-ai.game-m-m-t-s0.worker
 function profile(){try{return JSON.parse(localStorage.getItem('shahedcode_profile_v27')||'null')}catch(e){return null}}
 function saveProfile(p){try{localStorage.setItem('shahedcode_profile_v27',JSON.stringify(p));var map=JSON.parse(localStorage.getItem('shahedcode_accounts_v27')||'{}');if(map&&typeof map==='object'){var key=[p.firstName,p.lastName,p.username,p.phone].map(function(x){return String(x||'').trim().toLowerCase()}).join('|');map[key]=p;localStorage.setItem('shahedcode_accounts_v27',JSON.stringify(map));}}catch(e){}}
 function identity(p){return {firstName:p.firstName||'',lastName:p.lastName||'',username:p.username||'',phone:p.phone||''}}
-function premium(){var p=profile();return !!(p&&p.premium===true&&(!p.premiumExpiresAt||Date.now()<Number(p.premiumExpiresAt)))}
+function expiryMillis(value){if(value===null||value===undefined||value==='')return null;var n=Number(value);if(Number.isFinite(n)&&n>0)return n<1000000000000?n*1000:n;var parsed=Date.parse(String(value));return Number.isFinite(parsed)?parsed:NaN}
+function premium(){var p=profile();if(!p||p.premium!==true)return false;var exp=expiryMillis(p.premiumExpiresAt);return exp===null||(Number.isFinite(exp)&&Date.now()<exp)}
 function toastSafe(t){if(typeof window.toast==='function')window.toast(t);}
 function apiPost(path,body){return fetch(API.replace(/\/+$/,'')+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'}).then(function(r){return r.json().catch(function(){return {}}).then(function(d){if(!r.ok||!d.ok)throw Error((d.error&&d.error.message)||d.message||'درخواست ناموفق بود.');return d;});});}
 window.shahedcodeV1ShowPremiumWelcome=function(){var el=document.getElementById('v1PremiumWelcome');if(!el)return;el.hidden=false;window.setTimeout(function(){el.hidden=true;},4000);};
 function showBadge(){document.documentElement.dataset.premium=premium()?'yes':'no';var p=profile(),nodes=document.querySelectorAll('#sidebarProfileName,#accountWelcome');nodes.forEach(function(n){if(!n)return;var base=(n.textContent||'').replace(/\s*[⭐♛]?\s*پرمیوم\s*$/,'');if(premium()&&base.indexOf('پرمیوم')<0)n.textContent=base+' ⭐ پرمیوم';else if(!premium())n.textContent=base;});}
 function addHomePanel(){}
-function updateUI(){showBadge();var pro=premium(),st=document.getElementById('v1PremiumStatus'),ast=document.getElementById('v1AccountPremiumStatus'),note=document.getElementById('v1ModelNote'),m='gpt-6-luna';try{m=localStorage.getItem('shahedcode_v1_model')||m}catch(e){}if(st)st.textContent=pro?'⭐ حساب پرمیوم فعال است · ساخت بازی نامحدود · دریافت فایل و ZIP':'نسخهٔ رایگان · روزانه ۳ تست ساخت بازی';if(ast)ast.textContent=pro?'⭐ حساب پرمیوم فعال است':'حساب رایگان · روزانه ۳ تست ساخت بازی';['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(!sel)return;sel.disabled=!pro;sel.value=pro?m:'gpt-6-luna';});['v1ProfileModelNote','v1AccountModelNote'].forEach(function(id){var n=document.getElementById(id);if(n)n.textContent=pro?'مدل دلخواهت را انتخاب کن':'تغییر مدل فقط برای کاربران پرمیوم فعال است.';});if(window.state)window.state.currentModel=pro?m:'gpt-6-luna';}
+function updateUI(){showBadge();var pro=premium(),st=document.getElementById('v1PremiumStatus'),ast=document.getElementById('v1AccountPremiumStatus'),note=document.getElementById('v1ModelNote'),m='gpt-6-luna';try{m=localStorage.getItem('shahedcode_v1_model')||m}catch(e){}if(st)st.textContent=pro?'⭐ حساب پرمیوم فعال است · ساخت بازی نامحدود · دریافت فایل و ZIP':'نسخهٔ رایگان · روزانه ۳ تست ساخت بازی';if(ast)ast.textContent=pro?'⭐ حساب پرمیوم فعال است':'حساب رایگان · روزانه ۳ تست ساخت بازی';['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(!sel)return;sel.disabled=!pro;sel.value=pro?m:'gpt-6-luna';});['v1ProfileModelNote','v1AccountModelNote'].forEach(function(id){var n=document.getElementById(id);if(n)n.textContent=pro?'مدل دلخواهت را انتخاب کن':'تغییر مدل فقط برای کاربران پرمیوم فعال است.';});if(window.state)window.state.currentModel=pro?m:'gpt-6-luna';if(pro&&typeof addFileDownloads==='function')addFileDownloads();}
 window.shahedcodeV1UpdateUI=updateUI;
-function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await apiPost('/premium/redeem',{identity:identity(p),code:code});if(d.premium!==true)throw Error(d.message||'کد تأیید نشد؛ حساب همچنان رایگان است.');p.premium=true;p.premiumActivatedAt=d.activatedAt||new Date().toISOString();p.premiumExpiresAt=d.expiresAt||null;saveProfile(p);document.documentElement.dataset.premium='yes';updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
+window.shahedcodeV1IsPremium=premium;
+function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await apiPost('/premium/redeem',{identity:identity(p),code:code});if(d.premium!==true)throw Error(d.message||'کد تأیید نشد؛ حساب همچنان رایگان است.');p.premium=true;p.premiumActivatedAt=d.activatedAt||new Date().toISOString();var exp=expiryMillis(d.expiresAt);p.premiumExpiresAt=exp===null?null:(Number.isFinite(exp)?exp:d.expiresAt);saveProfile(p);if(window.V27&&typeof window.V27==='object')window.V27.profile=p;document.documentElement.dataset.premium='yes';if(typeof window.updateV27ProfileUI==='function')window.updateV27ProfileUI(p);updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
 ['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(sel&&!sel.dataset.bound){sel.dataset.bound='1';sel.onchange=function(){if(!premium()){this.value='gpt-6-luna';toastSafe('تغییر مدل فقط برای کاربران پرمیوم فعال است.');updateUI();return;}try{localStorage.setItem('shahedcode_v1_model',this.value)}catch(e){}if(window.state)window.state.currentModel=this.value;['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(otherId){var other=document.getElementById(otherId);if(other)other.value=sel.value;});toastSafe('مدل هوش مصنوعی تغییر کرد.');};}}); }
 function u16(n){return [n&255,(n>>>8)&255]}function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}function join(arr){var len=arr.reduce(function(a,b){return a+b.length},0),o=new Uint8Array(len),at=0;arr.forEach(function(x){o.set(x,at);at+=x.length});return o}function crc32(b){var c=-1;for(var i=0;i<b.length;i++){c^=b[i];for(var j=0;j<8;j++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return(c^-1)>>>0}function bytes(s){return new TextEncoder().encode(s)}
 function makeZip(files){var local=[],central=[],offset=0;files.forEach(function(f){var n=bytes(f.name),d=f.data,crc=crc32(d);var l=join([new Uint8Array(u32(0x04034b50)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),n,d]);local.push(l);central.push(join([new Uint8Array(u32(0x02014b50)),new Uint8Array(u16(20)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(0)),new Uint8Array(u32(offset)),n]));offset+=l.length;});var cd=join(central),end=join([new Uint8Array(u32(0x06054b50)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),new Uint8Array(u32(cd.length)),new Uint8Array(u32(offset)),new Uint8Array(u16(0))]);return new Blob([join(local),cd,end],{type:'application/zip'});}
 function saveBlob(blob,name){var a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},20000)}
-function extractFiles(text){var re=/```([a-zA-Z0-9_+.-]*)\s*\n([\s\S]*?)```/g,m,files=[],idx=0;while((m=re.exec(text))&&files.length<12){var lang=(m[1]||'txt').toLowerCase(),ext=({html:'html',htm:'html',css:'css',javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',json:'json',xml:'xml',markdown:'md',md:'md',bash:'sh',sh:'sh',sql:'sql',txt:'txt',yaml:'yml',yml:'yml'})[lang]||'txt';idx++;var name=(ext==='html'&&idx===1?'index.html':'file-'+idx+'.'+ext);files.push({name:name,data:bytes(m[2])});}return files;}
-function addFileDownloads(){if(!premium())return;document.querySelectorAll('.msg.bot').forEach(function(msg){if(msg.querySelector('.v1-downloads'))return;var bubble=msg.querySelector('.msg-bubble');if(!bubble)return;var files=extractFiles(bubble.innerText||'');if(!files.length)return;var row=document.createElement('div');row.className='v1-downloads';files.forEach(function(f){var b=document.createElement('button');b.type='button';b.textContent='⬇ '+f.name;b.onclick=function(){saveBlob(new Blob([f.data],{type:'application/octet-stream'}),f.name)};row.appendChild(b)});if(files.length>1){var z=document.createElement('button');z.type='button';z.textContent='📦 دریافت همه در ZIP';z.onclick=function(){saveBlob(makeZip(files),'shahedcode-files-v1.zip')};row.appendChild(z)}bubble.appendChild(row);});}
+function extForLang(lang){lang=String(lang||'').toLowerCase().trim();return ({html:'html',htm:'html',javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',css:'css',json:'json',xml:'xml',markdown:'md',md:'md',bash:'sh',sh:'sh',sql:'sql',text:'txt',txt:'txt',yaml:'yml',yml:'yml',java:'java',c:'c',cpp:'cpp',csharp:'cs',go:'go',rust:'rs',php:'php',ruby:'rb',swift:'swift',kotlin:'kt',ini:'ini',toml:'toml',diff:'diff'})[lang]||'txt'}
+function baseNameForExt(ext,index){var defaults={html:'index.html',css:'style.css',js:'script.js',ts:'index.ts',py:'main.py',json:'data.json',xml:'data.xml',md:'README.md',sh:'script.sh',sql:'query.sql',txt:'notes.txt',yml:'config.yml',java:'Main.java',c:'main.c',cpp:'main.cpp',cs:'Program.cs',go:'main.go',rs:'main.rs',php:'index.php',rb:'main.rb',swift:'main.swift',kt:'Main.kt',ini:'config.ini',toml:'config.toml',diff:'changes.diff'};var n=defaults[ext]||('file-'+index+'.'+ext);if(index===1)return n;var dot=n.lastIndexOf('.');return dot>0?n.slice(0,dot)+'-'+index+n.slice(dot):n+'-'+index}
+function filenameNearBlock(block,ext,index){var parts=[],node=block.previousSibling,limit=0;while(node&&limit<20){if(node.nodeType===1&&node.classList&&node.classList.contains('code-block'))break;if(node.nodeType===1&&node.classList&&node.classList.contains('v1-downloads'))break;parts.unshift(node.textContent||'');node=node.previousSibling;limit++;}var text=parts.join(' ').slice(-900),re=/([A-Za-z0-9_.-]+\.(?:html?|css|mjs|cjs|js|ts|tsx|jsx|py|json|xml|md|sh|sql|ya?ml|java|c|cpp|cs|go|rs|php|rb|swift|kt|ini|toml|diff|txt))/gi,m,last='';while((m=re.exec(text)))if(m[1].toLowerCase().endsWith('.'+ext.toLowerCase()))last=m[1];if(last&&last.length<=100&&/^[A-Za-z0-9_.-]+$/.test(last))return last;return baseNameForExt(ext,index)}
+function filesFromMessage(msg){var blocks=msg.querySelectorAll('.code-block'),files=[],used={},i;for(i=0;i<blocks.length&&files.length<20;i++){var code='';try{code=decodeURIComponent(blocks[i].dataset.code||'')}catch(e){code=''}if(!code&&blocks[i].querySelector('.code-body code'))code=blocks[i].querySelector('.code-body code').textContent||'';if(!String(code).trim())continue;var langNode=blocks[i].querySelector('.code-lang'),lang=langNode?langNode.textContent.toLowerCase().trim():'';var ext=extForLang(lang),name=filenameNearBlock(blocks[i],ext,files.length+1);if(used[name]){var dot=name.lastIndexOf('.');name=(dot>0?name.slice(0,dot):name)+'-'+(files.length+1)+(dot>0?name.slice(dot):'')}used[name]=true;files.push({name:name,data:bytes(code),type:ext})}return files}
+function addFileDownloads(){if(!premium())return;document.querySelectorAll('.msg.bot').forEach(function(msg){var bubble=msg.querySelector('.msg-bubble');if(!bubble)return;var row=msg.querySelector('.v1-downloads');var files=filesFromMessage(msg);if(!files.length){if(row)row.remove();return;}var fingerprint=files.map(function(f){return f.name+':'+f.data.length+':'+f.data.slice(0,16).join(',')}).join('|');if(row&&row.dataset.fingerprint===fingerprint)return;if(row)row.remove();row=document.createElement('div');row.className='v1-downloads';row.dataset.fingerprint=fingerprint;files.forEach(function(f){var b=document.createElement('button');b.type='button';b.textContent='⬇ دانلود '+f.name;b.setAttribute('aria-label','دانلود فایل '+f.name);b.onclick=function(){saveBlob(new Blob([f.data],{type:'application/octet-stream'}),f.name)};row.appendChild(b)});var z=document.createElement('button');z.type='button';z.textContent='📦 دانلود '+(files.length===1?'همین فایل به‌صورت ZIP':'همهٔ فایل‌ها در ZIP');z.onclick=function(){saveBlob(makeZip(files),'shahedcode-project.zip')};row.appendChild(z);bubble.appendChild(row);})}
 function loadTip(){fetch(API.replace(/\/+$/,'')+'/daily-tip',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){var n=document.getElementById('v1DailyTip');if(n&&d&&d.text){n.textContent=d.text;n.hidden=false;}else if(n)n.hidden=true;}).catch(function(){});}
 function maybeNotify(){if(document.hidden&&'Notification'in window&&Notification.permission==='granted'){try{new Notification('شاهد کد',{body:'پاسخ هوش مصنوعی آماده شد.'})}catch(e){}}}
 function boot(){bind();updateUI();loadTip();var stream=document.getElementById('chatStream')||document.body;new MutationObserver(function(){addFileDownloads();}).observe(stream,{childList:true,subtree:true});addFileDownloads();var send=document.getElementById('sendBtn');if(send&&!send.dataset.v1NotifyBound){send.dataset.v1NotifyBound='1';send.addEventListener('click',function(){if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission().catch(function(){});}});}document.addEventListener('visibilitychange',function(){if(!document.hidden)updateUI();});setInterval(function(){updateUI();},10000);}
@@ -5790,3 +5825,21 @@ var originalSendToAPI=window.sendToAPI;if(typeof originalSendToAPI==='function'&
 @keyframes v1GoldOrbit{to{transform:rotate(360deg)}}
 @media(max-width:480px){#accountBack .modal-head{padding-inline:15px!important}#accountBack .account-body{padding-inline:14px!important}#accountBack .account-foot{padding-inline:14px!important}}
 </style>
+
+<style>
+.game-workbench{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:8px;align-items:stretch}.game-upgrade-toggle{display:grid;place-items:center;border:1px solid var(--border-strong);border-radius:14px;background:linear-gradient(145deg,var(--accent-soft),var(--panel-2));color:var(--accent-3);cursor:pointer;min-height:74px}.game-upgrade-toggle svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.game-upgrade-panel{margin-top:12px;padding:14px;border:1px solid var(--border-strong);border-radius:15px;background:var(--panel-2);display:flex;flex-direction:column;gap:10px}.game-upgrade-panel[hidden]{display:none!important}.game-upgrade-panel h3{margin:0;font-size:14px}.game-upgrade-panel h3 span{display:block;color:var(--accent-3);font-size:10px;margin-top:4px}.game-upgrade-panel p{margin:0;font-size:11px;line-height:1.8;color:var(--text-dim)}.upgrade-file-label{font-size:12px;font-weight:700}.game-upgrade-panel input[type=file],.game-upgrade-panel textarea{width:100%;min-width:0;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text);font:inherit;font-size:12px}.upgrade-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.upgrade-checks label{display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.6}.upgrade-checks input{accent-color:var(--accent-3)}.game-usage-note{margin-top:9px;padding:8px 11px;border-radius:9px;background:var(--accent-soft);font-size:11px;color:var(--text-dim)}#accountBack .captcha-panel-v29{grid-template-columns:minmax(0,180px) minmax(110px,1fr)!important}#accountBack .captcha-art-wrap{display:flex!important;flex-direction:row!important;align-items:center!important;gap:6px!important;min-width:0}#accountBack #captchaRefresh{flex:0 0 34px!important}#accountBack #captchaCanvas{flex:1 1 auto;min-width:0;width:100%!important}#accountBack #captchaAnswer{min-width:0;width:100%}@media(max-width:480px){.game-workbench{grid-template-columns:minmax(0,1fr) 42px}.game-upgrade-toggle{min-height:65px}.upgrade-checks{grid-template-columns:1fr}#accountBack .captcha-panel-v29{grid-template-columns:minmax(0,1fr) minmax(90px,.8fr)!important;gap:6px!important;padding:6px!important}#accountBack .captcha-art-wrap{gap:4px!important}#accountBack #captchaRefresh{width:30px!important;height:30px!important;flex-basis:30px!important}#accountBack #captchaCanvas{height:46px!important}}
+</style>
+
+<style>.premium-active,.premium-badge,.profile-badge.premium{animation:premiumPulseV2 1.8s ease-in-out infinite alternate;filter:drop-shadow(0 0 10px rgba(250,204,21,.32))}@keyframes premiumPulseV2{0%{transform:translateY(0) scale(1);box-shadow:0 0 0 rgba(250,204,21,0)}100%{transform:translateY(-1px) scale(1.035);box-shadow:0 0 24px rgba(250,204,21,.24)}}@media(prefers-reduced-motion:reduce){.premium-active,.premium-badge,.profile-badge.premium{animation:none!important}}</style>
+
+<script>
+(function(){
+function q(id){return document.getElementById(id)}
+function isPro(){try{return typeof window.shahedcodeV1IsPremium==='function'&&window.shahedcodeV1IsPremium()}catch(e){return false}}
+function refreshGameNote(){var el=q('gameUsageNote');if(el)el.textContent=isPro()?'نسخهٔ پرمیوم: ساخت بازی نامحدود و ارتقای نامحدود':'نسخهٔ رایگان: روزانه ۳ بار ساخت بازی؛ هر بار ساخت، یک اعتبار کم می‌شود.'}
+function updateUsageNote(){refreshGameNote();}
+document.addEventListener('DOMContentLoaded',updateUsageNote);setTimeout(updateUsageNote,700);setInterval(updateUsageNote,2500);
+if(q('gameUpgradeToggle'))q('gameUpgradeToggle').addEventListener('click',function(){if(!isPro()){if(typeof toast==='function')toast('ارتقای بازی فقط برای حساب پرمیوم فعال است.');else alert('ارتقای بازی فقط برای حساب پرمیوم فعال است.');return;}var panel=q('gameUpgradePanel'),open=panel.hidden;panel.hidden=!open;this.setAttribute('aria-expanded',String(open));});
+if(q('gameUpgradeRun'))q('gameUpgradeRun').addEventListener('click',async function(){if(!isPro()){alert('این قابلیت فقط برای حساب پرمیوم است.');return;}var file=q('gameUpgradeFile').files[0],description=q('gameUpgradeDescription').value.trim(),checks=Array.prototype.slice.call(document.querySelectorAll('.upgrade-checks input:checked')).map(function(x){return x.value});if(!file||!(/\.html?$/i.test(file.name))){alert('یک فایل با پسوند .htm یا .html انتخاب کن.');return;}if(!description){alert('توضیح ارتقا را بنویس.');return;}if(!checks.length){alert('حداقل یکی از ۷ گزینه را انتخاب کن.');return;}if(file.size>1000000){alert('حجم فایل باید کمتر از ۱ مگابایت باشد.');return;}var btn=this;btn.disabled=true;btn.textContent='در حال خواندن و ارتقا...';try{var source=await file.text();var prompt='کد HTML زیر را به‌طور کامل ویرایش و ارتقا بده. خروجی باید یک فایل HTML مستقل و کامل باشد؛ هیچ بخشی را با سه‌نقطه حذف نکن و فقط کد نهایی را در یک بلوک ```html ارائه بده.\nشرح تغییرات درخواستی: '+description+'\nگزینه‌های انتخاب‌شده:\n- '+checks.join('\n- ')+'\nنام فایل ورودی: '+file.name+'\nکد فعلی:\n'+source;var answer=await new Promise(function(resolve,reject){var settled=false;streamChat([{role:'system',content:'تو مهندس ارشد فرانت‌اند هستی. کد HTML ارسالی را دقیق بخوان، ویژگی‌های موجود را حفظ کن، درخواست‌ها را اعمال کن، از کد مخرب/ردیاب و افشای کلیدها اجتناب کن. خروجی یک HTML کامل، سالم و مستقل باشد.'},{role:'user',content:prompt}],CONFIG.MAX_TOKENS_GAME,function(){},function(full){if(!settled){settled=true;resolve(full);}},function(error){if(!settled){settled=true;reject(error instanceof Error?error:new Error(String(error||'خطا در دریافت پاسخ')));}});});var match=String(answer||'').match(/```(?:html)?\s*([\s\S]*?)```/i);var html=(match?match[1]:String(answer||'')).trim();if(!/<html[\s>]|<!doctype html/i.test(html)||html.length<100)throw new Error('پاسخ کامل HTML دریافت نشد؛ دوباره تلاش کن.');var blob=new Blob([html],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=file.name.replace(/\.html?$/i,'')+'-upgraded.html';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);if(typeof toast==='function')toast('نسخهٔ ارتقایافته دانلود شد.');}catch(e){alert('ارتقای فایل ناموفق بود: '+(e.message||e));}finally{btn.disabled=false;btn.innerHTML='<svg><use href="#i-spark"/></svg>ارتقای فایل';}});
+})();
+</script>
