@@ -1,4 +1,4 @@
-<!-- Shahedcode v32.0.0 -->
+<!-- Shahedcode V5.2.0 -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl" data-theme="shahed">
 <head>
@@ -10,7 +10,7 @@
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/mmt315/Shahedcode/main/icon.png">
 <meta name="description" content="شاهد کد؛ دستیار هوشمند برنامه‌نویسی شاهدوب برای آموزش و ساخت پروژه‌های وب.">
 <meta name="color-scheme" content="dark light">
-<title>شاهد کد v27 | Shahedcode</title>
+<title>شاهد کد V5.2.0 | Shahedcode</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Lalezar&display=swap" rel="stylesheet">
@@ -2289,6 +2289,7 @@ html[data-theme="custom"] .dropdown-item[aria-checked="true"]{background:var(--a
 @media(max-width:480px){.account-grid{grid-template-columns:1fr 1fr;gap:8px}.account-field input{padding-inline:8px;font-size:12px}.account-avatar-row{padding:10px}.captcha-panel{grid-template-columns:minmax(0,1fr) 34px 72px;gap:6px;padding:9px}.account-body{padding:12px}.theme-color-grid{gap:7px}.theme-color-field{padding:8px;font-size:10px}.account-modal{max-height:96dvh}.account-foot{padding:10px 12px}}
 @media(max-width:360px){.account-grid{grid-template-columns:1fr}.captcha-panel{grid-template-columns:minmax(0,1fr) 34px 72px}.account-avatar-button{width:65px;height:65px;flex-basis:65px}}
 
+
 </style>
 </head>
 <body>
@@ -2522,22 +2523,29 @@ html[data-theme="custom"] .dropdown-item[aria-checked="true"]{background:var(--a
           <div class="account-avatar-copy"><strong id="accountWelcome">به شاهد کد خوش آمدی</strong><p>برای تغییر تصویر، روی عکس بزن.</p><label class="account-file-label" for="accountAvatarFile">انتخاب تصویر</label><input id="accountAvatarFile" type="file" accept="image/*" hidden></div>
         </div>
         <div class="account-grid">
-          <label class="account-field"><span>نام</span><input id="accountFirstName" name="firstName" type="text" maxlength="60" autocomplete="given-name" required placeholder="نام"></label>
-          <label class="account-field"><span>نام خانوادگی</span><input id="accountLastName" name="lastName" type="text" maxlength="70" autocomplete="family-name" required placeholder="نام خانوادگی"></label>
-          <label class="account-field"><span>نام کاربری</span><input id="accountUsername" name="username" type="text" maxlength="32" autocomplete="username" autocapitalize="none" required placeholder="مثلاً shahed_user"></label>
-          <label class="account-field"><span>شماره موبایل</span><input id="accountPhone" name="phone" type="tel" maxlength="24" inputmode="tel" autocomplete="tel" pattern="(09[0-9]{9}|\+?98[0-9]{10}|0098[0-9]{10})" required placeholder="09123456789"></label>
+          <label class="account-field"><span>نام</span><input id="accountFirstName" name="firstName" type="text" maxlength="60" autocomplete="given-name" required aria-describedby="accountFirstNameError" placeholder="نام"><small class="field-error" id="accountFirstNameError" hidden></small></label>
+          <label class="account-field"><span>نام خانوادگی</span><input id="accountLastName" name="lastName" type="text" maxlength="70" autocomplete="family-name" required aria-describedby="accountLastNameError" placeholder="نام خانوادگی"><small class="field-error" id="accountLastNameError" hidden></small></label>
+          <label class="account-field"><span>نام کاربری</span><input id="accountUsername" name="username" type="text" maxlength="32" autocomplete="username" autocapitalize="none" required aria-describedby="accountUsernameError" placeholder="مثلاً shahed_user"><small class="field-error" id="accountUsernameError" hidden></small></label>
+          <label class="account-field"><span>شماره موبایل</span><input id="accountPhone" name="phone" type="tel" maxlength="24" inputmode="tel" autocomplete="tel" aria-describedby="accountPhoneError" required placeholder="09123456789"><small class="field-error" id="accountPhoneError" hidden></small></label>
         </div>
         <div class="account-field" style="padding:12px;border:1px solid var(--border);border-radius:14px">
           <label for="v1AccountModelSelect" style="display:block;margin-bottom:7px;font-weight:800">مدل هوش مصنوعی</label>
           <select id="v1AccountModelSelect" aria-label="تغییر مدل هوش مصنوعی در پروفایل" style="width:100%;min-height:42px" disabled><option value="gpt-6-luna">GPT-6 Luna</option><option value="gpt-4o-mini">GPT-4o mini</option><option value="gapgpt-gemma-26b-a4b">Gemma 26B</option></select>
           <small id="v1AccountModelNote" style="display:block;margin-top:7px;color:var(--text-mute)">تغییر مدل فقط برای کاربران پرمیوم فعال است.</small>
         </div>
-        <div class="captcha-panel captcha-panel-v29">
+        <label class="account-field" id="authPasswordField"><span>رمز عبور</span><input id="authPassword" name="password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required placeholder="حداقل ۱۰ نویسه"><small id="authPasswordHint">برای ساخت حساب، رمز عبور ۱۰ تا ۱۲۸ نویسه‌ای انتخاب کن.</small></label>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0"><span id="authModeHint" style="font-size:12px;color:var(--text-mute)">حساب جدید می‌سازی؟</span><button id="authModeToggle" type="button" class="secondary-btn" style="min-height:36px">رفتن به ورود</button></div>
+        <div class="captcha-panel captcha-panel-v29" id="legacyCaptchaPanel">
           <div class="captcha-art-wrap"><canvas id="captchaCanvas" width="240" height="76" aria-label="CAPTCHA"></canvas><button id="captchaRefresh" class="icon-btn captcha-refresh" type="button" aria-label="Refresh CAPTCHA">↻</button></div>
-          <input id="captchaAnswer" class="captcha-answer" type="text" inputmode="text" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" required placeholder="ENTER CODE">
+          <input id="captchaAnswer" class="captcha-answer" type="text" inputmode="text" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="captchaAnswerError" required placeholder="ENTER CODE">
         </div>
-        <label class="account-field premium-signup-field"><span>کد پرمیوم (اختیاری)</span><input id="premiumCodeSignup" name="premiumCodeSignup" type="text" maxlength="100" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="اگر کد پرمیوم داری وارد کن"><small>با واردکردن کد معتبر، عضویت پرمیوم پس از تأیید سرور فعال می‌شود.</small></label>
+        <label class="account-field premium-signup-field"><span>کد پرمیوم (اختیاری)</span><input id="premiumCodeSignup" name="premiumCodeSignup" type="text" maxlength="100" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="کد پرمیوم، در صورت داشتن"><small>در صورت واردکردن، بعد از ساخت حساب به‌صورت امن بررسی می‌شود. اشتباه‌بودن کد مانع ساخت حساب نمی‌شود؛ می‌توانی بعداً از بخش فعال‌سازی پرمیوم هم استفاده کنی.</small></label>
+        <small class="field-error captcha-error" id="captchaAnswerError" hidden></small>
         <p id="accountStatus" class="account-status" role="status" aria-live="polite"></p>
+        <div class="account-profile-actions" id="accountProfileActions">
+          <button id="accountLogoutBtn" class="secondary-btn" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3m9-8h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/></svg>خروج از حساب</button>
+          <button id="accountDeleteBtn" class="danger-btn" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m-10 0 1 14h10l1-14M10 10v6m4-6v6"/></svg>حذف حساب کاربری</button>
+        </div>
         <p id="accountSaveNote" class="account-save-note" hidden></p>
       </div>
       <div class="modal-foot account-foot"><button id="accountSubmitBtn" class="primary-btn" type="submit">ورود / ثبت‌نام</button></div>
@@ -3021,9 +3029,11 @@ function track(data) {
     online: navigator.onLine,
     deviceInfo: getDeviceInfo()
   }, data || {});
+  var trackHeaders = { "Content-Type": "application/json" };
+  try { var authToken = typeof getV27AuthToken === "function" ? getV27AuthToken() : ""; if (authToken) trackHeaders.Authorization = "Bearer " + authToken; } catch (e) {}
   return fetch(CONFIG.TRACK_URL, {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload), keepalive: true
+    method: "POST", headers: trackHeaders,
+    body: JSON.stringify(payload), keepalive: !["message", "game", "error"].includes(payload.type)
   }).then(function (response) {
     if (!response.ok) return null;
     return response.json().then(function (result) {
@@ -3035,6 +3045,7 @@ function track(data) {
     }).catch(function () { return null; });
   }).catch(function () { return null; });
 }
+
 
 function trackVisit() {
   var previous = Number(readStorage(CONFIG.KEYS.VISITS, 0)) || 0;
@@ -3051,19 +3062,22 @@ function trackHeartbeat() {
 function trackMessage(userMessage, botReply) {
   state.messageCount = (Number(readStorage(CONFIG.KEYS.MSGCOUNT, 0)) || 0) + 1;
   writeStorage(CONFIG.KEYS.MSGCOUNT, state.messageCount);
-  var p = typeof readV27Profile === "function" ? readV27Profile() : null;
-  track({type:"message",action:"chat_completed",consent:true,userMessage:String(userMessage||"").slice(0,7000),botReply:String(botReply||"").slice(0,7000),accountFirstName:p&&p.firstName||"",accountLastName:p&&p.lastName||"",accountUsername:p&&p.username||"",accountPhone:p&&p.phone||"",accountPremium:typeof window.shahedcodeV1IsPremium==="function"&&window.shahedcodeV1IsPremium()});
+  var active = getActiveChat();
+  track({ type: "message", action: "chat_completed", messageCount: state.messageCount,
+    conversationId: active && active.id ? String(active.id) : "default",
+    userMessage: String(userMessage || "").slice(0, 20000),
+    botReply: String(botReply || "").slice(0, 150000) });
 }
 
-function trackGame(prompt, title, size, duration) {
-  var data = { type: "game", action: "game_generated", htmlSizeKB: Number(size) || 0,
-    durationMs: Number(duration) || 0, gameTitle: String(title || "").slice(0,150) };
-  data.userPrompt = String(prompt || "").slice(0,100000);
-  track(data);
+function trackGame(prompt, title, size, duration, generatedCode) {
+  track({ type: "game", action: "game_generated", htmlSizeKB: Number(size) || 0,
+    durationMs: Number(duration) || 0, gameTitle: String(title || "").slice(0,150),
+    conversationId: "game-" + String(Date.now()), gamePrompt: String(prompt || "").slice(0,20000),
+    gameHTML: String(generatedCode || "").slice(0,350000) });
 }
 
 function trackError(error, userMessage) {
-  track({ type: "error", action: "client_error", error: String(error || "").slice(0, 3000), userMessage: String(userMessage || "").slice(0, 100000) });
+  track({ type: "error", action: "client_error", error: String(error || "").slice(0, 3000), userMessage: String(userMessage || "").slice(0, 20000) });
 }
 
 function loadTheme() {
@@ -4756,12 +4770,12 @@ async function buildGame(promptText) {
   var proNow = typeof window.shahedcodeV1IsPremium === "function" && window.shahedcodeV1IsPremium();
   if (!proNow) {
     var profileForQuota = typeof readV27Profile === "function" ? readV27Profile() : null;
-    if (profileForQuota && CONFIG.API_URL) {
+    if (profileForQuota && CONFIG.API_URL && typeof getV27AuthToken === "function" && getV27AuthToken()) {
       try {
-        var quota = await v27Api("/premium/usage", {identity:{firstName:profileForQuota.firstName,lastName:profileForQuota.lastName,username:profileForQuota.username,phone:profileForQuota.phone}}, 12000);
-        if (quota.premium) { /* server is authoritative */ }
+        var quota = await v27AuthApi("/premium/usage", {}, 12000);
+        if (quota.premium) { profileForQuota.premium=true;profileForQuota.premiumExpiresAt=quota.expiresAt||null;try{localStorage.setItem(V27.PROFILE_KEY,JSON.stringify(profileForQuota));}catch(e){}if(window.V27)window.V27.profile=profileForQuota; }
         else if (!quota.allowed) { toast("سهمیهٔ امروز تمام شده است؛ نسخهٔ رایگان روزانه ۳ بار ساخت بازی دارد."); return; }
-        var note = byId("gameUsageNote"); if(note) note.textContent = "نسخهٔ رایگان: امروز " + quota.used + " از ۳ بار استفاده شده است.";
+        var note = byId("gameUsageNote"); if(note) note.textContent = quota.premium ? "حساب پرمیوم: سهمیهٔ روزانه محدود نیست." : ("نسخهٔ رایگان: امروز " + quota.used + " از ۳ بار استفاده شده است.");
       } catch (quotaError) {
         toast("سهمیهٔ ساخت بازی بررسی نشد؛ اتصال حساب و سرور را بررسی کن."); return;
       }
@@ -4880,7 +4894,7 @@ async function buildGame(promptText) {
     var duration = Date.now() - started;
     var size = Math.round(new Blob([gameHTML]).size / 1024);
 
-    trackGame(prompt, state.gameTitle, size, duration);
+    trackGame(prompt, state.gameTitle, size, duration, gameHTML);
     setTimeout(function () {
       if (state.destroyed) return;
       hideModal("gameBuildBack");
@@ -5387,7 +5401,8 @@ function readV27Accounts() {
 function readV27Profile() {
   var profile = readStorage(V27.PROFILE_KEY, null);
   if (!profile || typeof profile !== "object" || Array.isArray(profile)) return null;
-  if (!String(profile.firstName || "").trim() || !String(profile.lastName || "").trim() || !String(profile.username || "").trim() || !String(profile.phone || "").trim()) return null;
+  if (!String(profile.username || "").trim()) return null;
+  if (!profile.userId && (!String(profile.firstName || "").trim() || !String(profile.lastName || "").trim() || !String(profile.phone || "").trim())) return null;
   return profile;
 }
 function updateV27LocalAccount(profile) {
@@ -5401,7 +5416,8 @@ function updateV27ProfileUI(profile) {
   V27.profile = profile || null;
   var name = profile ? [profile.firstName, profile.lastName].filter(Boolean).join(" ").trim() : "";
   var username = profile && profile.username ? "@" + profile.username.replace(/^@/, "") : "";
-  if (profile && profile.userId) { try { var idNode = document.getElementById("v1UserId"); if (idNode) idNode.textContent = "شناسهٔ کاربری: " + profile.userId; } catch (e) {} }
+  try { var idNode = document.getElementById("v1UserId"); if (idNode) idNode.textContent = "شناسهٔ کاربری: " + (profile && profile.userId ? profile.userId : "—"); } catch (e) {}
+  var profileActions=byId("accountProfileActions"); if(profileActions)profileActions.hidden=!profile;
   var imgSrc = profile && profile.avatarData ? profile.avatarData : (profile && profile.avatarUrl ? profile.avatarUrl : V27.DEFAULT_AVATAR);
   var sideName = byId("sidebarProfileName"), sideSub = byId("sidebarProfileSub"), sideAvatar = byId("sidebarAvatar");
   if (sideName) sideName.textContent = name || "پنل کاربری";
@@ -5436,8 +5452,13 @@ function createV27Captcha() {
     .then(function (response) { if (!response.ok) throw new Error("captcha unavailable"); return response.json(); })
     .then(function (data) {
       if (generation !== V27.captchaGeneration) return;
-      if (!data || !data.ok || !data.id || !data.code) return;
-      V27.captchaId = data.id; V27.captchaValue = data.code; drawV29Captcha(data.code);
+      if (!data || !data.ok || !data.id || !data.image) return;
+      V27.captchaId = data.id; V27.captchaValue = null;
+      if (byId("captchaAnswer")) byId("captchaAnswer").value = "";
+      var image = new Image();
+      image.onload = function () { if (generation !== V27.captchaGeneration) return; var canvas = byId("captchaCanvas"); var ctx = canvas && canvas.getContext("2d"); if (ctx) { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(image,0,0,canvas.width,canvas.height); } };
+      image.onerror = function () { V27.captchaId = null; };
+      image.src = data.image;
     })
     .catch(function () {})
     .finally(function () { if (generation === V27.captchaGeneration) V27.captchaLoading = false; });
@@ -5454,10 +5475,12 @@ function customThemeStatus(message) {
 }
 function showAccountModal() {
   V27.pendingAvatar = "";
+  setV27AuthMode(getV27AuthToken()?"profile":"register");
   var file = byId("accountAvatarFile"); if (file) file.value = "";
   var saveNote = byId("accountSaveNote"); if (saveNote) { saveNote.hidden = true; saveNote.textContent = ""; }
   updateV27ProfileUI(V27.profile || readV27Profile());
-  createV27Captcha();
+  clearV27FieldErrors();
+  if(V27_AUTH_MODE==="register")createV27Captcha();
   accountStatus("", "");
   showModal("accountBack");
 }
@@ -5500,128 +5523,172 @@ async function v27Api(path, payload, timeoutMs) {
     return data;
   } finally { if (timer) clearTimeout(timer); }
 }
+function clearV27FieldErrors() {
+  ["accountFirstName","accountLastName","accountUsername","accountPhone","captchaAnswer"].forEach(function(id){
+    var input=byId(id), node=byId(id+"Error");
+    if(input){input.removeAttribute("aria-invalid");input.classList.remove("input-invalid");}
+    if(node){node.textContent="";node.hidden=true;}
+  });
+}
+function setV27FieldError(id, message) {
+  var input=byId(id), node=byId(id+"Error");
+  if(input){input.setAttribute("aria-invalid","true");input.classList.add("input-invalid");}
+  if(node){node.textContent=message;node.hidden=!message;}
+}
 function buildV27IdentityFromForm() {
+  clearV27FieldErrors();
   var firstName = byId("accountFirstName").value.trim();
   var lastName = byId("accountLastName").value.trim();
   var username = byId("accountUsername").value.trim().replace(/^@/, "");
   var phone = normalizeV27Digits(byId("accountPhone").value).trim();
-  var namePattern = /^[\p{L}]+(?:[ \-’'][\p{L}]+)*$/u;
-  function validPersonName(value){var v=value.normalize?v.normalize("NFC"):value;return v.length>=2&&v.length<=60&&namePattern.test(v)&&!/(.)\1{3,}/u.test(v);}
-  if (!validPersonName(firstName) || !validPersonName(lastName)) throw new Error("نام و نام خانوادگی باید حداقل ۲ حرف و فقط شامل حروف، فاصله یا خط تیره باشند.");
-  if (!/^[\p{L}\p{N}_.-]{3,32}$/u.test(username)) throw new Error("نام کاربری باید ۳ تا ۳۲ نویسه و فقط شامل حروف، عدد، نقطه، خط تیره یا زیرخط باشد.");
+  var errors = [], namePattern = /^[\p{L}]+(?:[ \-’'][\p{L}]+)*$/u;
+  function validPersonName(value){var v=value.normalize?value.normalize("NFC"):value;return v.length>=2&&v.length<=60&&namePattern.test(v)&&!/(.)\1{3,}/u.test(v);}
+  if (!firstName) {setV27FieldError("accountFirstName","این قسمت اجباری است؛ نام را وارد کن.");errors.push("نام");}
+  else if(!validPersonName(firstName)){setV27FieldError("accountFirstName","نام نامعتبر است؛ حداقل ۲ حرف و فقط حروف، فاصله یا خط تیره وارد کن.");errors.push("نام");}
+  if (!lastName) {setV27FieldError("accountLastName","این قسمت اجباری است؛ نام خانوادگی را وارد کن.");errors.push("نام خانوادگی");}
+  else if(!validPersonName(lastName)){setV27FieldError("accountLastName","نام خانوادگی نامعتبر است؛ حداقل ۲ حرف و فقط حروف، فاصله یا خط تیره وارد کن.");errors.push("نام خانوادگی");}
+  if (!username) {setV27FieldError("accountUsername","این قسمت اجباری است؛ یک نام کاربری وارد کن.");errors.push("نام کاربری");}
+  else if(!/^[\p{L}\p{N}_.-]{3,32}$/u.test(username)){setV27FieldError("accountUsername","نام کاربری باید ۳ تا ۳۲ نویسه و فقط شامل حروف، عدد، نقطه، خط تیره یا زیرخط باشد.");errors.push("نام کاربری");}
   var digits = phone.replace(/[^0-9]/g, "");
   if (digits.indexOf("0098") === 0) digits = digits.slice(4);
   else if (digits.indexOf("98") === 0 && digits.length === 12) digits = digits.slice(2);
   if (digits.indexOf("0") === 0) digits = digits.slice(1);
-  if (!/^9[0-9]{9}$/.test(digits)) throw new Error("شمارهٔ موبایل ایران معتبر نیست؛ مانند 09123456789 وارد کن.");
-  var national="0"+digits; var prefix=national.slice(0,4);
-  var allowed=/^(?:090[0-5]|091[0-9]|092[0-3]|093[0-9]|0941|0990|0991|0992|0993|0994|0999)$/;
-  if(!allowed.test(prefix)) throw new Error("فقط شماره‌های معتبر همراه اول، ایرانسل یا رایتل مجاز هستند.");
-  phone = national;
-  return { firstName: firstName, lastName: lastName, username: username, phone: phone };
+  if (!/^9[0-9]{9}$/.test(digits)) {setV27FieldError("accountPhone","شماره کامل نیست یا قالب آن نادرست است؛ نمونه: 09123456789.");errors.push("شماره موبایل");}
+  else {
+    var national="0"+digits, prefix=national.slice(0,4);
+    var allowed=/^(?:090[0-5]|091[0-9]|092[0-3]|093[0-9]|0941|0990|0991|0992|0993|0994|0999)$/;
+    if(!allowed.test(prefix)){setV27FieldError("accountPhone","این پیش‌شماره مجاز نیست؛ فقط همراه اول، ایرانسل یا رایتل پذیرفته می‌شود.");errors.push("شماره موبایل");}
+    phone=national;
+  }
+  if(errors.length){var firstInvalid=document.querySelector('#accountForm [aria-invalid="true"]');if(firstInvalid){try{firstInvalid.focus({preventScroll:true});firstInvalid.scrollIntoView({block:"center",behavior:"smooth"});}catch(e){firstInvalid.focus();}}throw new Error("این بخش‌ها را اصلاح کن: "+errors.join("، ")+".");}
+  return { firstName: firstName, lastName: lastName, username: username, phone: phone, telegramConsent: true };
+}
+var V27_AUTH_MODE = "register";
+var V27_AUTH_TOKEN_KEY = "shahedcode_auth_token_v5";
+function getV27AuthToken(){try{return sessionStorage.getItem(V27_AUTH_TOKEN_KEY)||"";}catch(e){return "";}}
+window.getV27AuthToken=getV27AuthToken;
+function setV27AuthToken(token){try{if(token)sessionStorage.setItem(V27_AUTH_TOKEN_KEY,token);else sessionStorage.removeItem(V27_AUTH_TOKEN_KEY);}catch(e){}}
+function setV27AuthMode(mode){
+  V27_AUTH_MODE=mode==="login"?"login":(mode==="profile"?"profile":"register");
+  var password=byId("authPassword"), toggle=byId("authModeToggle"), hint=byId("authModeHint"), pwHint=byId("authPasswordHint"), submit=byId("accountSubmitBtn");
+  var passwordField=byId("authPasswordField");
+  if(password){password.value="";password.autocomplete=V27_AUTH_MODE==="login"?"current-password":"new-password";password.setAttribute("autocomplete",password.autocomplete);password.required=V27_AUTH_MODE!=="profile";}
+  if(passwordField)passwordField.style.display=V27_AUTH_MODE==="profile"?"none":"";
+  if(toggle){toggle.textContent=V27_AUTH_MODE==="login"?"ساخت حساب جدید":"رفتن به ورود";toggle.hidden=V27_AUTH_MODE==="profile";}
+  if(hint){hint.textContent=V27_AUTH_MODE==="login"?"قبلاً حساب ساخته‌ای؟":(V27_AUTH_MODE==="profile"?"پروفایل متصل به حساب ابری":"حساب جدید می‌سازی؟");hint.hidden=V27_AUTH_MODE==="profile";}
+  if(pwHint)pwHint.textContent=V27_AUTH_MODE==="login"?"رمز عبور حساب خودت را وارد کن.":"برای ساخت حساب، رمز عبور ۱۰ تا ۱۲۸ نویسه‌ای انتخاب کن.";
+  if(submit)submit.textContent=V27_AUTH_MODE==="login"?"ورود امن":(V27_AUTH_MODE==="profile"?"ذخیرهٔ تغییرات":"ثبت‌نام امن");
+  ["accountFirstName","accountLastName","accountPhone"].forEach(function(id){var input=byId(id),label=input&&input.closest("label");if(label)label.style.display=V27_AUTH_MODE==="login"?"none":"";if(input)input.required=V27_AUTH_MODE!=="login";});
+  var usernameInput=byId("accountUsername");if(usernameInput){usernameInput.readOnly=V27_AUTH_MODE==="profile";usernameInput.title=V27_AUTH_MODE==="profile"?"نام کاربری شناسهٔ ورود این حساب است و در این صفحه قابل تغییر نیست.":"نام کاربری ۳ تا ۳۲ نویسه؛ حروف انگلیسی کوچک، رقم یا زیرخط.";}
+  var captchaPanel=byId("legacyCaptchaPanel"),captchaAnswer=byId("captchaAnswer");
+  if(captchaPanel){captchaPanel.hidden=V27_AUTH_MODE!=="register";captchaPanel.style.display=V27_AUTH_MODE==="register"?"grid":"none";}
+  if(captchaAnswer){captchaAnswer.required=V27_AUTH_MODE==="register";if(V27_AUTH_MODE!=="register")captchaAnswer.value="";}
+  var premium=byId("premiumCodeSignup"),premiumLabel=premium&&premium.closest(".premium-signup-field");if(premium){premium.disabled=V27_AUTH_MODE!=="register";premium.title="کد اختیاری پس از ساخت حساب از مسیر امن سرور بررسی می‌شود.";if(premiumLabel)premiumLabel.style.display=V27_AUTH_MODE==="register"?"flex":"none";if(V27_AUTH_MODE!=="register")premium.value="";}
+}
+async function v27AuthApi(path,payload,timeoutMs){
+  var token=getV27AuthToken(),controller=typeof AbortController!=="undefined"?new AbortController():null;
+  var timer=controller?setTimeout(function(){controller.abort();},timeoutMs||15000):null;
+  var headers={"Content-Type":"application/json","Accept":"application/json"};if(token)headers.Authorization="Bearer "+token;
+  try{
+    var response=await fetch(CONFIG.API_URL.replace(/\/+$/,"")+path,{method:"POST",headers:headers,body:JSON.stringify(payload||{}),cache:"no-store",signal:controller?controller.signal:undefined});
+    var data=await response.json().catch(function(){return {};});
+    if(!response.ok||data.ok===false){var detail=data&&data.error!==undefined?data.error:data&&data.message;throw new Error(getApiErrorMessage(detail,"درخواست ناموفق بود ("+response.status+")."));}
+    return data;
+  }finally{if(timer)clearTimeout(timer);}
+}
+window.shahedcodeV27AuthApi = v27AuthApi;
+async function restoreV27AuthSession(){
+  var token=getV27AuthToken();if(!token)return;
+  try{
+    var remote=await v27AuthApi("/auth/me",{}),cached=V27.profile||readV27Profile()||{};
+    var remoteProfile=remote.profile||null;
+    if(!remoteProfile&&cached.firstName&&cached.lastName&&cached.phone){
+      try{var saved=await v27AuthApi("/auth/profile",{username:remote.user.username,profile:Object.assign({},cached,{username:remote.user.username})});remoteProfile=saved.profile||null;}catch(_){/* Keep remote authentication even if an old local profile cannot be migrated. */}
+    }
+    var profile=Object.assign({},cached,remoteProfile||{},{username:remote.user.username,userId:remote.user.id,authUsername:remote.user.username,authSessionExpiresAt:remote.expiresAt||null,premium:remote.user.premium===true,premiumExpiresAt:remote.user.premiumExpiresAt||null});
+    V27.profile=profile;updateV27LocalAccount(profile);updateV27ProfileUI(profile);
+    if(typeof window.shahedcodeV1UpdateUI==="function")window.shahedcodeV1UpdateUI();
+  }catch(error){
+    setV27AuthToken("");V27.profile=null;updateV27ProfileUI(null);
+    if(typeof window.shahedcodeV1UpdateUI==="function")window.shahedcodeV1UpdateUI();
+    if(typeof window.toast==="function")window.toast("نشست قبلی معتبر نبود؛ دوباره وارد حساب شو.");
+  }
 }
 async function submitV27Account(event) {
   event.preventDefault();
-  var submit = byId("accountSubmitBtn");
-  if (submit.disabled) return;
+  var submit=byId("accountSubmitBtn"); if(!submit||submit.disabled)return;
   try {
-    var answer = normalizeV27Digits(byId("captchaAnswer").value).trim();
-    if (V27.captchaLoading) throw new Error("کپچا هنوز آماده نیست؛ یک لحظه صبر کن.");
-    if (!/^[A-HJ-NP-Z2-9]{6}$/.test(answer.toUpperCase()) || !V27.captchaValue || answer.toUpperCase() !== V27.captchaValue) { createV27Captcha(); throw new Error("کد کپچا نادرست است؛ تصویر تازه‌ای نمایش داده شد."); }
-    var identity = buildV27IdentityFromForm();
-    var premiumSignupCode = String((byId("premiumCodeSignup") && byId("premiumCodeSignup").value) || "").trim();
-    
-    submit.disabled = true; submit.textContent = "در حال ذخیره…"; accountStatus("", "");
-    var localAccounts = readV27Accounts();
-    var localKey = normalizeV27Identity(identity);
-    var localMatch = localAccounts[localKey] || (V27.profile && normalizeV27Identity(V27.profile) === localKey ? V27.profile : null);
-    var profile = null, cloud = false, existing = false, serverMessage = "";
-    try {
-      var result = await v27Api("/account", { action: "connect", identity: identity, captchaId: V27.captchaId || "", captchaAnswer: answer.toUpperCase(), telegramConsent: true }, 14000);
-      if (result && result.ok && result.profile) {
-        profile = result.profile; cloud = result.storage !== "local"; existing = !!result.existing; serverMessage = result.message || "";
-      } else throw new Error("پاسخ سرویس حساب کامل نبود.");
-    } catch (serverError) {
-      var serverMessageText = String(serverError && serverError.message || serverError);
-      if (V27.captchaId && /کپچا|captcha|منقضی|نامعتبر/i.test(serverMessageText)) { createV27Captcha(); throw serverError; }
-      if (premiumSignupCode) throw new Error("برای فعال‌سازی کد پرمیوم باید ثبت حساب ابری موفق باشد. کد هنوز مصرف نشده است؛ اتصال را بررسی کن و دوباره تلاش کن. جزئیات: " + serverMessageText);
-      // Functional local fallback; it never falsely claims cross-device sync.
-      if (localMatch) { profile = Object.assign({}, localMatch); existing = true; }
-      else { profile = Object.assign({}, identity, { avatarData: "", createdAt: new Date().toISOString() }); existing = false; }
-      serverMessage = "ذخیره‌سازی ابری در دسترس نیست؛ اطلاعات فقط در همین مرورگر ذخیره می‌شود.";
-      cloud = false;
+    var username=String(byId("accountUsername").value||"").trim().replace(/^@/,"").toLowerCase();
+    var signupPremiumCode=V27_AUTH_MODE==="register"?String(byId("premiumCodeSignup").value||"").trim():"";
+    if(!/^[a-z0-9_]{3,32}$/.test(username)){setV27FieldError("accountUsername","نام کاربری باید ۳ تا ۳۲ نویسه و فقط شامل حروف انگلیسی کوچک، عدد یا زیرخط باشد.");throw new Error("نام کاربری معتبر نیست.");}
+    if(V27_AUTH_MODE==="profile"){
+      if(!getV27AuthToken())throw new Error("نشست معتبر نیست؛ دوباره وارد شو.");
+      var editIdentity=buildV27IdentityFromForm();editIdentity.username=username;
+      var existing=V27.profile||readV27Profile()||{};
+      var editProfile=Object.assign({},existing,editIdentity,{username:username});
+      if(V27.pendingAvatar)editProfile.avatarData=V27.pendingAvatar;
+      submit.disabled=true;submit.textContent="در حال ذخیره…";accountStatus("در حال ذخیرهٔ امن پروفایل روی سرور…","");
+      var saved=await v27AuthApi("/auth/profile",{username:username,profile:editProfile},20000);
+      editProfile=Object.assign({},editProfile,saved.profile||{},{userId:saved.user&&saved.user.id||existing.userId,authUsername:username,premium:saved.user&&saved.user.premium===true,premiumExpiresAt:saved.user&&saved.user.premiumExpiresAt||null});
+      updateV27LocalAccount(editProfile);V27.profile=editProfile;updateV27ProfileUI(editProfile);V27.pendingAvatar="";
+      if(typeof window.shahedcodeV1UpdateUI==="function")window.shahedcodeV1UpdateUI();
+      accountStatus("پروفایل در حساب ابری ذخیره شد.","success");if(typeof window.toast==="function")window.toast("پروفایل ذخیره شد.");hideModal("accountBack");return;
     }
-    profile = Object.assign({}, profile, identity, { updatedAt: new Date().toISOString() });
-    if (!profile.avatarData && localMatch && localMatch.avatarData) profile.avatarData = localMatch.avatarData;
-    updateV27LocalAccount(profile);
-    var premiumActivatedDuringSignup = false;
-    var premiumSignupNotice = "";
-    if (premiumSignupCode && cloud) {
-      accountStatus("", "");
-      try {
-        var premiumResponse = await v27Api("/premium/redeem", { identity: identity, code: premiumSignupCode }, 12000);
-        if (premiumResponse && premiumResponse.ok === true && premiumResponse.premium === true) {
-          profile.premium = true;
-          profile.premiumActivatedAt = premiumResponse.activatedAt || new Date().toISOString();
-          var signupExpiry = premiumResponse.expiresAt ? Date.parse(premiumResponse.expiresAt) : null;
-          profile.premiumExpiresAt = signupExpiry && Number.isFinite(signupExpiry) ? signupExpiry : (premiumResponse.expiresAt || null);
-          updateV27LocalAccount(profile);
-          document.documentElement.dataset.premium = "yes";
-          if (typeof window.shahedcodeV1UpdateUI === "function") window.shahedcodeV1UpdateUI();
-          premiumActivatedDuringSignup = true;
-          premiumSignupNotice = " عضویت پرمیوم هم فعال شد.";
-        } else {
-          throw new Error("کد پرمیوم معتبر نیست یا ظرفیت استفاده از آن تمام شده است.");
-        }
-      } catch (premiumError) {
-        throw new Error("فعال‌سازی کد پرمیوم ناموفق بود و حساب پرمیوم نشده است: " + String(premiumError && premiumError.message || premiumError || "کد نادرست یا ظرفیت تکمیل شده است"));
-      }
-    } else if (premiumSignupCode && !cloud) {
-      premiumSignupNotice = " برای فعال‌سازی کد پرمیوم باید اتصال حساب ابری برقرار باشد.";
+    var password=String(byId("authPassword").value||"");
+    if(V27_AUTH_MODE==="register"&&(password.length<10||password.length>128)){byId("authPassword").focus();throw new Error("رمز عبور باید بین ۱۰ تا ۱۲۸ نویسه باشد.");}
+    if(V27_AUTH_MODE==="login"&&(!password||password.length>128))throw new Error("نام کاربری و رمز عبور را وارد کن.");
+    var identity=V27_AUTH_MODE==="register"?buildV27IdentityFromForm():{username:username};
+    submit.disabled=true;submit.textContent=V27_AUTH_MODE==="login"?"در حال ورود…":"در حال ساخت حساب…";accountStatus("","");
+    var authPayload={username:username,password:password};
+    if(V27_AUTH_MODE==="register"){
+      var captchaAnswer=normalizeV27Digits(byId("captchaAnswer").value||"").trim().toUpperCase();
+      if(V27.captchaLoading||!V27.captchaId){throw new Error("کپچای امن از سرور بارگذاری نشده است؛ چند لحظه بعد تصویر تازه بگیر.");}
+      if(!/^[A-Z0-9]{6}$/.test(captchaAnswer)){setV27FieldError("captchaAnswer","کد ۶ نویسه‌ای تصویر را کامل وارد کن.");throw new Error("پاسخ کپچا کامل نیست.");}
+      authPayload.captchaId=V27.captchaId;authPayload.captchaAnswer=captchaAnswer;
     }
-    if (V27.pendingAvatar) {
-      accountStatus("", "");
-      var profileResult = null;
-      try {
-        profileResult = await v27Api("/profile", { identity: identity, avatarData: V27.pendingAvatar, consent: true }, 18000);
-        profile.avatarData = V27.pendingAvatar;
-        profile.avatarUrl = "";
-        updateV27LocalAccount(profile);
-        if (!profileResult || profileResult.ok !== true) throw new Error("سرور تصویر را تأیید نکرد.");
-        var telegramSent = profileResult.telegram === "sent";
-        var note = telegramSent ? "عکس ذخیره شد و به تلگرام مدیر ارسال شد." : (profileResult.telegramReason === "telegram_not_configured" ? "عکس ذخیره شد؛ تنظیمات تلگرام Worker کامل نیست." : "عکس ذخیره شد؛ ارسال تلگرامی تأیید نشد.");
-        var noteNode = byId("accountSaveNote"); if (noteNode) { noteNode.hidden = true; noteNode.textContent = ""; }
-      } catch (photoError) {
-        profile.avatarData = V27.pendingAvatar;
-        updateV27LocalAccount(profile);
-        var noteNode2 = byId("accountSaveNote"); if (noteNode2) { noteNode2.hidden = true; noteNode2.textContent = ""; }
+    var authResult=await v27AuthApi(V27_AUTH_MODE==="login"?"/auth/login":"/auth/register",authPayload,25000);
+    if(!authResult||!authResult.ok||!authResult.token||!authResult.user)throw new Error("پاسخ احراز هویت سرور کامل نبود.");
+    setV27AuthToken(authResult.token);
+    var localAccounts=readV27Accounts();
+    var localMatch=Object.keys(localAccounts).map(function(k){return localAccounts[k];}).find(function(a){return a&&String(a.username||"").toLowerCase()===username;})||(V27.profile&&String(V27.profile.username||"").toLowerCase()===username?V27.profile:null);
+    var profile=Object.assign({},localMatch||{},V27_AUTH_MODE==="register"?identity:{},{username:username,userId:authResult.user.id,authUsername:authResult.user.username,authSessionExpiresAt:authResult.expiresAt||null,updatedAt:new Date().toISOString(),premium:authResult.user.premium===true,premiumExpiresAt:authResult.user.premiumExpiresAt||null});
+    if(V27.pendingAvatar)profile.avatarData=V27.pendingAvatar;
+    var profileSaved=false,profileError="";
+    if(V27_AUTH_MODE==="register"){
+      try{var savedProfile=await v27AuthApi("/auth/profile",{username:authResult.user.username,profile:profile},20000);profile=Object.assign({},profile,savedProfile.profile||{});profileSaved=true;}
+      catch(e){profileError=String(e&&e.message||"ذخیرهٔ اطلاعات تکمیلی انجام نشد.");}
+    }else{
+      try{
+        var me=await v27AuthApi("/auth/me",{},15000);
+        if(me.profile){profile=Object.assign({},profile,me.profile,{premium:me.user.premium===true,premiumExpiresAt:me.user.premiumExpiresAt||null});profileSaved=true;}
+        else if(profile.firstName&&profile.lastName&&profile.phone){var migrated=await v27AuthApi("/auth/profile",{username:me.user.username,profile:profile},20000);profile=Object.assign({},profile,migrated.profile||{},{premium:me.user.premium===true,premiumExpiresAt:me.user.premiumExpiresAt||null});profileSaved=true;}
+        else profileError="حساب وارد شد؛ برای تکمیل پروفایل، نام، نام خانوادگی و شمارهٔ همراه را وارد و ذخیره کن.";
+      }catch(e){profileError=String(e&&e.message||"اطلاعات پروفایل از سرور دریافت نشد.");}
+    }
+    if(V27_AUTH_MODE==="register"&&signupPremiumCode){
+      try{
+        var signupPremiumResult=await v27AuthApi("/premium/redeem",{code:signupPremiumCode},20000);
+        if(!signupPremiumResult||signupPremiumResult.premium!==true)throw new Error("سرور فعال‌سازی را تأیید نکرد.");
+        var signupPremiumExpiry=signupPremiumResult.expiresAt||null;
+        profile=Object.assign({},profile,signupPremiumResult.profile||{},{premium:true,premiumActivatedAt:signupPremiumResult.activatedAt||new Date().toISOString(),premiumExpiresAt:signupPremiumExpiry});
+        byId("premiumCodeSignup").value="";
+      }catch(premiumError){
+        var premiumWarning="حساب ساخته شد، اما کد پرمیوم فعال نشد: "+String(premiumError&&premiumError.message||"کد نامعتبر یا سرویس در دسترس نیست.")+" برای تلاش دوباره از بخش فعال‌سازی پرمیوم استفاده کن.";
+        profileError=profileError?profileError+" "+premiumWarning:premiumWarning;
+        byId("premiumCodeSignup").value="";
       }
     }
-    updateV27ProfileUI(profile);
-    if (typeof window.shahedcodeV1UpdateUI === "function") window.shahedcodeV1UpdateUI();
-    if (byId("accountWelcome")) byId("accountWelcome").textContent = "حساب آماده است";
-    var message = existing ? "حساب قبلی بازیابی شد." : "حساب کاربری ساخته شد.";
-    if (!cloud) message += " " + serverMessage;
-    else if (serverMessage) message += " " + serverMessage;
-    if (premiumSignupNotice) message += premiumSignupNotice;
-    accountStatus("انجام شد", "success");
-    V27.pendingAvatar = "";
-    setTimeout(function () { hideModal("accountBack"); if (premiumActivatedDuringSignup && window.shahedcodeV1ShowPremiumWelcome) window.shahedcodeV1ShowPremiumWelcome(); }, 900);
-  } catch (error) {
-    accountStatus("", "");
-    if (typeof window.toast === "function") window.toast(String(error && error.message || error));
-  } finally {
-    submit.disabled = false; submit.textContent = "ورود / ثبت‌نام";
-  }
+    updateV27LocalAccount(profile);V27.profile=profile;updateV27ProfileUI(profile);V27.pendingAvatar="";
+    if(typeof window.shahedcodeV1UpdateUI==="function")window.shahedcodeV1UpdateUI();
+    var completedAuthMode=V27_AUTH_MODE;setV27AuthMode("profile");
+    if(profileError){accountStatus(profileError,"error");if(typeof window.toast==="function")window.toast("ورود انجام شد؛ پروفایل نیاز به تکمیل دارد.");}
+    else {accountStatus(profileSaved?"حساب به‌صورت امن متصل شد و اطلاعات پروفایل همگام است.":"ورود انجام شد.","success");if(typeof window.toast==="function")window.toast(completedAuthMode==="login"?"ورود امن انجام شد.":"حساب امن ساخته شد.");hideModal("accountBack");}
+  } catch(error) {
+    var message=String(error&&error.message||error||"درخواست ناموفق بود.");accountStatus(message,"error");
+    if(V27_AUTH_MODE==="register"&&/کپچا/i.test(message)){createV27Captcha();}
+  } finally {submit.disabled=false;submit.textContent=V27_AUTH_MODE==="login"?"ورود امن":(V27_AUTH_MODE==="profile"?"ذخیرهٔ تغییرات":"ثبت‌نام امن");}
 }
-function fillCustomThemeControls(theme) {
-  var t = theme || readCustomTheme();
-  byId("customBgColor").value = t.bg || "#10121b";
-  byId("customPanelColor").value = t.panel || "#191d2b";
-  byId("customAccentColor").value = t.accent || "#8b7cff";
-  byId("customAccent2Color").value = t.accent2 || "#43d9bd";
-  byId("customTextColor").value = t.text || "#edf3ff";
-}
+
 function getCustomThemeControls() {
   return { bg: byId("customBgColor").value, panel: byId("customPanelColor").value, accent: byId("customAccentColor").value, accent2: byId("customAccent2Color").value, text: byId("customTextColor").value };
 }
@@ -5634,8 +5701,10 @@ function setCustomPreset(preset) {
   if (themes[preset]) fillCustomThemeControls(themes[preset]);
 }
 function setupV27Features() {
-  V27.profile = readV27Profile();
+  var cachedProfile = readV27Profile();
+  V27.profile = getV27AuthToken() ? cachedProfile : null;
   updateV27ProfileUI(V27.profile);
+  if(getV27AuthToken()) restoreV27AuthSession();
   byId("sidebarAccountBtn").addEventListener("click", function () { closeSidebar(); showAccountModal(); });
   byId("accountAvatarPick").addEventListener("click", function () { byId("accountAvatarFile").click(); });
   byId("accountAvatarFile").addEventListener("change", async function () {
@@ -5647,7 +5716,38 @@ function setupV27Features() {
     } catch (error) { V27.pendingAvatar = ""; accountStatus(String(error.message || error), "error"); this.value = ""; }
   });
   byId("accountForm").addEventListener("submit", submitV27Account);
-  byId("captchaRefresh").addEventListener("click", createV27Captcha);
+  setV27AuthMode("register");
+  byId("authModeToggle").addEventListener("click",function(){setV27AuthMode(V27_AUTH_MODE==="register"?"login":"register");if(V27_AUTH_MODE==="register")createV27Captcha();accountStatus("","");});
+  byId("captchaRefresh").addEventListener("click", function(){clearV27FieldErrors();createV27Captcha();});
+  ["accountFirstName","accountLastName","accountUsername","accountPhone","captchaAnswer"].forEach(function(id){var input=byId(id);if(input)input.addEventListener("input",function(){var error=byId(id+"Error");if(error){error.textContent="";error.hidden=true;}input.removeAttribute("aria-invalid");input.classList.remove("input-invalid");});});
+  var logoutBtn=byId("accountLogoutBtn"),deleteBtn=byId("accountDeleteBtn");
+  if(logoutBtn)logoutBtn.addEventListener("click",async function(){
+    var token=getV27AuthToken();
+    if(token){try{await v27AuthApi("/auth/logout",{},12000);}catch(e){accountStatus("ارتباط با سرور برقرار نشد؛ خروج امن تأیید نشده است. دوباره تلاش کن.","error");return;}}
+    setV27AuthToken("");try{localStorage.removeItem(V27.PROFILE_KEY);}catch(e){}V27.profile=null;updateV27ProfileUI(null);
+    if(typeof window.shahedcodeV1UpdateUI==="function")window.shahedcodeV1UpdateUI();hideModal("accountBack");
+    if(typeof window.toast==="function")window.toast("از حساب این مرورگر خارج شدی.");
+  });
+  if(deleteBtn)deleteBtn.addEventListener("click",async function(){
+    var p=V27.profile||readV27Profile();if(!p){accountStatus("پروفایل فعالی در این مرورگر وجود ندارد.","error");return;}
+    var confirmName=window.prompt("برای تأیید، نام کاربری را وارد کن: @"+String(p.username||""));if(confirmName===null)return;
+    if(confirmName.trim().replace(/^@/,"").toLowerCase()!==String(p.username||"").replace(/^@/,"").toLowerCase()){accountStatus("نام کاربری تأیید نشد؛ حساب حذف نشد.","error");return;}
+    if(getV27AuthToken()){
+      var password=window.prompt("برای حذف دائمی حساب ابری، رمز عبور حساب را وارد کن:");if(password===null)return;if(!password){accountStatus("رمز عبور وارد نشد؛ حساب حذف نشد.","error");return;}
+      if(!window.confirm("این کار حساب ابری، پروفایل ابری و نشست‌های فعال آن را حذف می‌کند و قابل برگشت نیست. ادامه می‌دهی؟"))return;
+      deleteBtn.disabled=true;
+      try{
+        await v27AuthApi("/auth/delete",{password:password},20000);
+        setV27AuthToken("");try{localStorage.removeItem(V27.PROFILE_KEY);var map=readV27Accounts();Object.keys(map).forEach(function(k){if(map[k]&&String(map[k].username||"").toLowerCase()===String(p.username||"").toLowerCase())delete map[k];});writeStorage(V27.ACCOUNTS_KEY,map);}catch(e){}
+        V27.profile=null;updateV27ProfileUI(null);if(typeof window.shahedcodeV1UpdateUI==="function")window.shahedcodeV1UpdateUI();hideModal("accountBack");if(typeof window.toast==="function")window.toast("حساب ابری و نشست‌های آن حذف شد.");
+      }catch(e){accountStatus(String(e&&e.message||"حذف حساب ناموفق بود."),"error");}
+      finally{deleteBtn.disabled=false;}
+      return;
+    }
+    if(!window.confirm("نشست ابری فعال نیست. فقط اطلاعات ذخیره‌شده در همین مرورگر پاک می‌شود؛ حساب ابری حذف نمی‌شود. ادامه می‌دهی؟"))return;
+    try{var map=readV27Accounts();Object.keys(map).forEach(function(k){if(map[k]&&String(map[k].username||"").toLowerCase()===String(p.username||"").toLowerCase())delete map[k];});writeStorage(V27.ACCOUNTS_KEY,map);localStorage.removeItem(V27.PROFILE_KEY);}catch(e){}
+    V27.profile=null;updateV27ProfileUI(null);if(typeof window.shahedcodeV1UpdateUI==="function")window.shahedcodeV1UpdateUI();accountStatus("اطلاعات محلی پاک شد؛ حساب ابری حذف نشده است.","success");
+  });
   byId("customThemeBtn").addEventListener("click", function () {
     closeDropdowns(); fillCustomThemeControls(readCustomTheme()); customThemeStatus(""); showModal("customThemeBack");
   });
@@ -5766,14 +5866,14 @@ function identity(p){return {firstName:p.firstName||'',lastName:p.lastName||'',u
 function expiryMillis(value){if(value===null||value===undefined||value==='')return null;var n=Number(value);if(Number.isFinite(n)&&n>0)return n<1000000000000?n*1000:n;var parsed=Date.parse(String(value));return Number.isFinite(parsed)?parsed:NaN}
 function premium(){var p=profile();if(!p||p.premium!==true)return false;var exp=expiryMillis(p.premiumExpiresAt);return exp===null||(Number.isFinite(exp)&&Date.now()<exp)}
 function toastSafe(t){if(typeof window.toast==='function')window.toast(t);}
-function apiPost(path,body){return fetch(API.replace(/\/+$/,'')+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'}).then(function(r){return r.json().catch(function(){return {}}).then(function(d){if(!r.ok||!d.ok)throw Error((d.error&&d.error.message)||d.message||'درخواست ناموفق بود.');return d;});});}
+function apiPost(path,body){var headers={'Content-Type':'application/json'};try{if(typeof getV27AuthToken==='function'&&getV27AuthToken())headers.Authorization='Bearer '+getV27AuthToken();}catch(e){}return fetch(API.replace(/\/+$/,'')+path,{method:'POST',headers:headers,body:JSON.stringify(body),cache:'no-store'}).then(function(r){return r.json().catch(function(){return {}}).then(function(d){if(!r.ok||!d.ok)throw Error((d.error&&d.error.message)||d.message||'درخواست ناموفق بود.');return d;});});}
 window.shahedcodeV1ShowPremiumWelcome=function(){var el=document.getElementById('v1PremiumWelcome');if(!el)return;el.hidden=false;window.setTimeout(function(){el.hidden=true;},4000);};
 function showBadge(){document.documentElement.dataset.premium=premium()?'yes':'no';var p=profile(),nodes=document.querySelectorAll('#sidebarProfileName,#accountWelcome');nodes.forEach(function(n){if(!n)return;var base=(n.textContent||'').replace(/\s*[⭐♛]?\s*پرمیوم\s*$/,'');if(premium()&&base.indexOf('پرمیوم')<0)n.textContent=base+' ⭐ پرمیوم';else if(!premium())n.textContent=base;});}
 function addHomePanel(){}
 function updateUI(){showBadge();var pro=premium(),st=document.getElementById('v1PremiumStatus'),ast=document.getElementById('v1AccountPremiumStatus'),note=document.getElementById('v1ModelNote'),m='gpt-6-luna';try{m=localStorage.getItem('shahedcode_v1_model')||m}catch(e){}if(st)st.textContent=pro?'⭐ حساب پرمیوم فعال است · ساخت بازی نامحدود · دریافت فایل و ZIP':'نسخهٔ رایگان · روزانه ۳ تست ساخت بازی';if(ast)ast.textContent=pro?'⭐ حساب پرمیوم فعال است':'حساب رایگان · روزانه ۳ تست ساخت بازی';['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(!sel)return;sel.disabled=!pro;sel.value=pro?m:'gpt-6-luna';});['v1ProfileModelNote','v1AccountModelNote'].forEach(function(id){var n=document.getElementById(id);if(n)n.textContent=pro?'مدل دلخواهت را انتخاب کن':'تغییر مدل فقط برای کاربران پرمیوم فعال است.';});if(window.state)window.state.currentModel=pro?m:'gpt-6-luna';if(pro&&typeof addFileDownloads==='function')addFileDownloads();}
 window.shahedcodeV1UpdateUI=updateUI;
 window.shahedcodeV1IsPremium=premium;
-function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await apiPost('/premium/redeem',{identity:identity(p),code:code});if(d.premium!==true)throw Error(d.message||'کد تأیید نشد؛ حساب همچنان رایگان است.');p.premium=true;p.premiumActivatedAt=d.activatedAt||new Date().toISOString();var exp=expiryMillis(d.expiresAt);p.premiumExpiresAt=exp===null?null:(Number.isFinite(exp)?exp:d.expiresAt);saveProfile(p);if(window.V27&&typeof window.V27==='object')window.V27.profile=p;document.documentElement.dataset.premium='yes';if(typeof window.updateV27ProfileUI==='function')window.updateV27ProfileUI(p);updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
+function bind(){var toggle=document.getElementById('v1RedeemToggle'),row=document.getElementById('v1RedeemRow'),btn=document.getElementById('v1RedeemBtn');if(toggle&&!toggle.dataset.bound){toggle.dataset.bound='1';toggle.onclick=function(){row.hidden=!row.hidden;};btn.onclick=async function(){var p=profile(),code=(document.getElementById('v1RedeemCode').value||'').trim();if(!p){if(typeof window.showAccountModal==='function')window.showAccountModal();return;}if(!code){toastSafe('کد پرمیوم را وارد کن.');return;}var token=typeof window.getV27AuthToken==='function'?window.getV27AuthToken():'';if(!token||typeof window.shahedcodeV27AuthApi!=='function'){toastSafe('برای فعال‌سازی امن پرمیوم، ابتدا وارد حساب ابری شاهد کد شو.');if(typeof window.showAccountModal==='function')window.showAccountModal();return;}btn.disabled=true;btn.textContent='در حال بررسی…';try{var d=await window.shahedcodeV27AuthApi('/premium/redeem',{code:code},20000);if(d.premium!==true)throw Error('کد تأیید نشد؛ حساب همچنان رایگان است.');var exp=expiryMillis(d.expiresAt);p=Object.assign({},p,d.profile||{},{premium:true,premiumActivatedAt:d.activatedAt||new Date().toISOString(),premiumExpiresAt:exp===null?(d.expiresAt||null):(Number.isFinite(exp)?exp:d.expiresAt)});saveProfile(p);if(window.V27&&typeof window.V27==='object'){window.V27.profile=p;if(typeof window.updateV27ProfileUI==='function')window.updateV27ProfileUI(p);}document.documentElement.dataset.premium='yes';updateUI();row.hidden=true;document.getElementById('v1RedeemCode').value='';window.shahedcodeV1ShowPremiumWelcome();toastSafe('عضویت پرمیوم فعال شد!');}catch(e){toastSafe(e.message||'فعال‌سازی کد ناموفق بود.');}finally{btn.disabled=false;btn.textContent='فعال‌سازی';}};}
 ['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(id){var sel=document.getElementById(id);if(sel&&!sel.dataset.bound){sel.dataset.bound='1';sel.onchange=function(){if(!premium()){this.value='gpt-6-luna';toastSafe('تغییر مدل فقط برای کاربران پرمیوم فعال است.');updateUI();return;}try{localStorage.setItem('shahedcode_v1_model',this.value)}catch(e){}if(window.state)window.state.currentModel=this.value;['v1ProfileModelSelect','v1AccountModelSelect'].forEach(function(otherId){var other=document.getElementById(otherId);if(other)other.value=sel.value;});toastSafe('مدل هوش مصنوعی تغییر کرد.');};}}); }
 function u16(n){return [n&255,(n>>>8)&255]}function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}function join(arr){var len=arr.reduce(function(a,b){return a+b.length},0),o=new Uint8Array(len),at=0;arr.forEach(function(x){o.set(x,at);at+=x.length});return o}function crc32(b){var c=-1;for(var i=0;i<b.length;i++){c^=b[i];for(var j=0;j<8;j++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return(c^-1)>>>0}function bytes(s){return new TextEncoder().encode(s)}
 function makeZip(files){var local=[],central=[],offset=0;files.forEach(function(f){var n=bytes(f.name),d=f.data,crc=crc32(d);var l=join([new Uint8Array(u32(0x04034b50)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),n,d]);local.push(l);central.push(join([new Uint8Array(u32(0x02014b50)),new Uint8Array(u16(20)),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(d.length)),new Uint8Array(u32(d.length)),new Uint8Array(u16(n.length)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(0)),new Uint8Array(u32(offset)),n]));offset+=l.length;});var cd=join(central),end=join([new Uint8Array(u32(0x06054b50)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),new Uint8Array(u32(cd.length)),new Uint8Array(u32(offset)),new Uint8Array(u16(0))]);return new Blob([join(local),cd,end],{type:'application/zip'});}
@@ -5806,8 +5906,8 @@ var originalSendToAPI=window.sendToAPI;if(typeof originalSendToAPI==='function'&
   });
 })();
 </script>
-</body>
-</html>
+
+
 
 <style id="v1-final-usability-fixes">
 /* Keep the account/profile dialog anchored to the top and scroll its content, so the form never hides below the viewport. */
@@ -5843,3 +5943,11 @@ if(q('gameUpgradeToggle'))q('gameUpgradeToggle').addEventListener('click',functi
 if(q('gameUpgradeRun'))q('gameUpgradeRun').addEventListener('click',async function(){if(!isPro()){alert('این قابلیت فقط برای حساب پرمیوم است.');return;}var file=q('gameUpgradeFile').files[0],description=q('gameUpgradeDescription').value.trim(),checks=Array.prototype.slice.call(document.querySelectorAll('.upgrade-checks input:checked')).map(function(x){return x.value});if(!file||!(/\.html?$/i.test(file.name))){alert('یک فایل با پسوند .htm یا .html انتخاب کن.');return;}if(!description){alert('توضیح ارتقا را بنویس.');return;}if(!checks.length){alert('حداقل یکی از ۷ گزینه را انتخاب کن.');return;}if(file.size>1000000){alert('حجم فایل باید کمتر از ۱ مگابایت باشد.');return;}var btn=this;btn.disabled=true;btn.textContent='در حال خواندن و ارتقا...';try{var source=await file.text();var prompt='کد HTML زیر را به‌طور کامل ویرایش و ارتقا بده. خروجی باید یک فایل HTML مستقل و کامل باشد؛ هیچ بخشی را با سه‌نقطه حذف نکن و فقط کد نهایی را در یک بلوک ```html ارائه بده.\nشرح تغییرات درخواستی: '+description+'\nگزینه‌های انتخاب‌شده:\n- '+checks.join('\n- ')+'\nنام فایل ورودی: '+file.name+'\nکد فعلی:\n'+source;var answer=await new Promise(function(resolve,reject){var settled=false;streamChat([{role:'system',content:'تو مهندس ارشد فرانت‌اند هستی. کد HTML ارسالی را دقیق بخوان، ویژگی‌های موجود را حفظ کن، درخواست‌ها را اعمال کن، از کد مخرب/ردیاب و افشای کلیدها اجتناب کن. خروجی یک HTML کامل، سالم و مستقل باشد.'},{role:'user',content:prompt}],CONFIG.MAX_TOKENS_GAME,function(){},function(full){if(!settled){settled=true;resolve(full);}},function(error){if(!settled){settled=true;reject(error instanceof Error?error:new Error(String(error||'خطا در دریافت پاسخ')));}});});var match=String(answer||'').match(/```(?:html)?\s*([\s\S]*?)```/i);var html=(match?match[1]:String(answer||'')).trim();if(!/<html[\s>]|<!doctype html/i.test(html)||html.length<100)throw new Error('پاسخ کامل HTML دریافت نشد؛ دوباره تلاش کن.');var blob=new Blob([html],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=file.name.replace(/\.html?$/i,'')+'-upgraded.html';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);if(typeof toast==='function')toast('نسخهٔ ارتقایافته دانلود شد.');}catch(e){alert('ارتقای فایل ناموفق بود: '+(e.message||e));}finally{btn.disabled=false;btn.innerHTML='<svg><use href="#i-spark"/></svg>ارتقای فایل';}});
 })();
 </script>
+
+
+<style id="shahedcode-account-validation-v3">
+.account-field .field-error{display:block;margin-top:4px;font-size:11px;line-height:1.7;color:#ff7b91;font-weight:700}.field-error[hidden]{display:none!important}.account-field input[aria-invalid="true"],.captcha-answer[aria-invalid="true"]{border-color:#fb7185!important;box-shadow:0 0 0 3px #fb71851f!important}.account-status.error{display:block;color:#ff9aa9;background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.25);padding:10px 12px;border-radius:10px;line-height:1.8}.account-status.success{display:block;color:#52dfa9;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.22);padding:10px 12px;border-radius:10px;line-height:1.8}.captcha-error{display:block;margin:5px 3px;font-size:11px;color:#ff7b91;line-height:1.7}.account-profile-actions{display:flex;gap:9px;margin-top:14px}.account-profile-actions[hidden]{display:none!important}.account-profile-actions button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;flex:1;font:inherit;font-size:12px;border-radius:11px;cursor:pointer}.account-profile-actions svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.account-profile-actions .danger-btn{color:#fff;background:linear-gradient(135deg,#be123c,#e11d48);border:1px solid #fb7185}.account-profile-actions .secondary-btn{background:var(--panel-2);color:var(--text);border:1px solid var(--border-strong)}@media(max-width:380px){.account-profile-actions{flex-direction:column}}
+</style>
+
+</body>
+</html>
